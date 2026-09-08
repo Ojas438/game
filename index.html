@@ -8,15 +8,13 @@
   :root{--bg:#0b1020;--panel:#141b33;--ink:#eaf0ff;--muted:#93a0c8;
     --red:#e23636;--gold:#f0c000;--blue:#3b6ef0;--green:#2fbf71;}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+  html,body{margin:0;height:100%;background:#0b1020;color:var(--ink);
     font-family:"Trebuchet MS",Segoe UI,system-ui,sans-serif;overflow:hidden}
   #wrap{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}
-  canvas{display:block;background:#0b1020;max-width:100%;max-height:100%;box-shadow:0 0 60px #0008;cursor:crosshair}
+  canvas{display:block;background:#8ec9f0;max-width:100%;max-height:100%;box-shadow:0 0 60px #0008;cursor:crosshair}
 
-  .hud{position:absolute;top:0;left:0;right:0;padding:8px 12px;
-    display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;gap:10px}
-  .pcard{background:var(--panel);border-radius:12px;padding:7px 12px;min-width:170px;
-    box-shadow:0 4px 14px #0006;border:2px solid #ffffff10}
+  .hud{position:absolute;top:0;left:0;right:0;padding:8px 12px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;gap:10px}
+  .pcard{background:var(--panel);border-radius:12px;padding:7px 12px;min-width:170px;box-shadow:0 4px 14px #0006;border:2px solid #ffffff10}
   .pname{font-weight:bold;font-size:13px;letter-spacing:.5px}
   .hpbar{height:11px;background:#000a;border-radius:8px;margin-top:5px;overflow:hidden}
   .hpfill{height:100%;background:linear-gradient(90deg,var(--green),#8fe);transition:width .12s;border-radius:8px}
@@ -24,46 +22,46 @@
   .stats{font-size:12px;color:var(--muted);margin-top:4px;display:flex;gap:10px;justify-content:space-between}
   .stats b{color:var(--gold)}
   .wpn{font-size:11px;color:#cdd8ff;margin-top:2px}
+  .levelchip{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:#000a;border-radius:20px;padding:5px 16px;font-size:13px;color:#ffe;pointer-events:none;font-weight:bold;letter-spacing:.5px}
 
-  .center-msg{position:absolute;top:8px;left:50%;transform:translateX(-50%);
-    background:#000a;border-radius:20px;padding:5px 16px;font-size:13px;color:var(--muted);
-    text-align:center;pointer-events:none;max-width:52%}
-  .hint{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);
-    color:var(--muted);font-size:12px;text-align:center;pointer-events:none;width:92%}
+  .center-msg{position:absolute;top:40px;left:50%;transform:translateX(-50%);background:#000a;border-radius:20px;padding:5px 16px;font-size:13px;color:var(--muted);text-align:center;pointer-events:none;max-width:52%}
+  .hint{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);color:#0a1a2e;font-size:12px;text-align:center;pointer-events:none;width:92%;text-shadow:0 1px 2px #fff8}
 
-  .barbottom{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
-    display:flex;gap:10px;align-items:center;background:#0009;padding:8px 10px;border-radius:16px;backdrop-filter:blur(4px)}
+  .barbottom{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;background:#0009;padding:8px 10px;border-radius:16px;backdrop-filter:blur(4px)}
   .owned{display:flex;gap:6px;flex-wrap:wrap;max-width:60vw;justify-content:center}
-  .wbtn{width:44px;height:44px;border-radius:11px;border:2px solid #ffffff18;background:#1b2b4d;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:19px;gap:1px;user-select:none;cursor:pointer}
+  .wbtn{width:44px;height:44px;border-radius:11px;border:2px solid #ffffff18;background:#1b2b4d;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:19px;gap:1px;user-select:none;cursor:pointer}
   .wbtn small{font-size:7px;color:var(--muted);line-height:1}
   .wbtn.sel{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 0 14px #f0c00055}
-  .shopbtn{background:linear-gradient(90deg,var(--gold),#c99700);color:#241a00;border:none;
-    padding:9px 14px;border-radius:12px;font-weight:bold;font-size:13px;cursor:pointer;white-space:nowrap;
-    display:flex;flex-direction:column;align-items:center;line-height:1.1}
+  .shopbtn{background:linear-gradient(90deg,var(--gold),#c99700);color:#241a00;border:none;padding:9px 14px;border-radius:12px;font-weight:bold;font-size:13px;cursor:pointer;white-space:nowrap;display:flex;flex-direction:column;align-items:center;line-height:1.1}
   .shopbtn small{font-weight:normal;font-size:10px}
+  .quitbtn{background:#2a3350;color:#cdd8ff;border:none;padding:9px 12px;border-radius:12px;font-size:12px;cursor:pointer}
 
-  .overlay{position:absolute;inset:0;background:radial-gradient(#131c3aee,#070b18f2);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:18px;z-index:5}
+  .overlay{position:absolute;inset:0;background:radial-gradient(#131c3aee,#070b18f2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:18px;z-index:5;overflow:auto}
   .overlay.hide{display:none}
-  .logo{font-size:min(11vw,62px);font-weight:900;letter-spacing:2px;line-height:1;
-    background:linear-gradient(90deg,var(--red),var(--gold),var(--blue));
-    -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 8px #f0c00033)}
+  .logo{font-size:min(11vw,62px);font-weight:900;letter-spacing:2px;line-height:1;background:linear-gradient(90deg,var(--red),var(--gold),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 8px #f0c00033)}
   .sub{color:var(--muted);max-width:480px;font-size:15px;line-height:1.5}
-  .keys{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;font-size:13px;color:#cdd8ff}
+  .keys{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font-size:13px;color:#cdd8ff}
   .keys div{background:#ffffff10;padding:8px 14px;border-radius:12px}
   kbd{background:#28325a;border-radius:6px;padding:1px 7px;font-family:monospace;border:1px solid #ffffff22;font-size:12px}
-  .btn{background:linear-gradient(90deg,var(--red),#b81c1c);color:#fff;border:none;
-    padding:13px 26px;border-radius:30px;font-size:17px;font-weight:bold;cursor:pointer;
-    box-shadow:0 6px 20px #e2363655;letter-spacing:1px;transition:transform .1s}
+  .btn{background:linear-gradient(90deg,var(--red),#b81c1c);color:#fff;border:none;padding:13px 26px;border-radius:30px;font-size:17px;font-weight:bold;cursor:pointer;box-shadow:0 6px 20px #e2363655;letter-spacing:1px;transition:transform .1s}
   .btn:active{transform:scale(.95)}
   .btn.alt{background:linear-gradient(90deg,var(--blue),#274bb5);box-shadow:0 6px 20px #3b6ef055}
   .btn.gold{background:linear-gradient(90deg,var(--gold),#c99700);color:#241a00;box-shadow:0 6px 20px #f0c00055}
   .row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
   .win-title{font-size:min(9vw,52px);font-weight:900}
 
-  .shopwrap{width:min(760px,94vw);max-height:82vh;overflow:auto;background:#0e1631;border-radius:18px;
-    padding:16px;border:2px solid #ffffff12;box-shadow:0 20px 60px #000a}
+  /* level select */
+  .levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;width:min(680px,92vw)}
+  .lvl{background:#16203f;border:2px solid #ffffff14;border-radius:14px;padding:14px 12px;cursor:pointer;position:relative;transition:transform .1s}
+  .lvl:active{transform:scale(.97)}
+  .lvl.locked{opacity:.45;filter:grayscale(.7);cursor:not-allowed}
+  .lvl .no{font-size:12px;color:var(--muted)}
+  .lvl .nm{font-weight:bold;font-size:16px;margin-top:2px}
+  .lvl .th{font-size:11px;color:#9fb0dd;margin-top:4px}
+  .lvl .lock{position:absolute;top:8px;right:10px;font-size:16px}
+  .lvl .done{position:absolute;top:8px;right:10px;font-size:15px;color:var(--green)}
+
+  .shopwrap{width:min(760px,94vw);max-height:82vh;overflow:auto;background:#0e1631;border-radius:18px;padding:16px;border:2px solid #ffffff12;box-shadow:0 20px 60px #000a}
   .shophead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
   .shophead h2{margin:0;font-size:22px}
   .coinpill{background:#241a00;color:var(--gold);font-weight:bold;padding:6px 14px;border-radius:20px;font-size:16px;border:1px solid #f0c00055}
@@ -77,8 +75,7 @@
   .card.sel{border-color:var(--gold);box-shadow:0 0 16px #f0c00055}
   .card.locked{opacity:.5;filter:grayscale(.6)}
   .card .tag{position:absolute;top:8px;right:8px;font-size:10px;background:#0007;padding:2px 7px;border-radius:10px}
-  .kobanner{position:absolute;top:36%;left:50%;transform:translate(-50%,-50%);font-size:min(13vw,90px);
-    font-weight:900;color:#fff;text-shadow:0 0 30px #e23636,0 4px 0 #7a0000;pointer-events:none;opacity:0;z-index:4;transition:opacity .1s;letter-spacing:2px}
+  .kobanner{position:absolute;top:36%;left:50%;transform:translate(-50%,-50%);font-size:min(13vw,90px);font-weight:900;color:#fff;text-shadow:0 0 30px #e23636,0 4px 0 #7a0000;pointer-events:none;opacity:0;z-index:4;transition:opacity .1s;letter-spacing:2px}
 </style>
 </head>
 <body>
@@ -100,61 +97,70 @@
     </div>
   </div>
 
-  <div class="center-msg" id="msg">Move with WASD • aim with mouse • SPACE to fire</div>
+  <div class="levelchip" id="levelchip">LEVEL 1</div>
+  <div class="center-msg" id="msg">Move WASD • aim mouse • SPACE fire</div>
   <div class="hint" id="hint"></div>
   <div class="kobanner" id="koban">K.O.!</div>
 
   <div class="barbottom" id="bar">
     <div class="owned" id="owned"></div>
     <button class="shopbtn" id="shopBtn" onclick="openShop(0)">🛒 SHOP<small id="shopCoins">🪙 0</small></button>
+    <button class="quitbtn" onclick="toMenu()">☰ Levels</button>
   </div>
 
   <!-- MENU -->
   <div class="overlay" id="menu">
     <div class="logo">RAGDOLL<br>AVENGERS</div>
-    <div class="sub">Free-roaming ragdoll brawl. Start with a plain bow — <b>score K.O.s to earn coins</b>,
-      then buy mightier Marvel weapons. First to <b>7 K.O.s</b> wins.</div>
+    <div class="sub">Ragdoll archer duels across a 5-level campaign. Start with a bow —
+      <b>score K.O.s to earn coins</b>, buy mightier Marvel weapons, and climb the towers.</div>
     <div class="keys">
-      <div><b style="color:var(--gold)">Player 1</b><br><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move/jump • 🖱️ aim • <kbd>Space</kbd> fire • <kbd>B</kbd> shop</div>
-      <div><b style="color:var(--red)">Player 2</b><br><kbd>←</kbd><kbd>→</kbd> move <kbd>↑</kbd> jump • <kbd>,</kbd><kbd>.</kbd> aim • <kbd>/</kbd> fire • <kbd>M</kbd> shop</div>
+      <div><b style="color:var(--gold)">P1</b> <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move • 🖱️ aim • <kbd>Space</kbd> fire • <kbd>B</kbd> shop</div>
+      <div><b style="color:var(--red)">P2</b> <kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd> move • <kbd>,</kbd><kbd>.</kbd> aim • <kbd>/</kbd> fire • <kbd>M</kbd> shop</div>
     </div>
     <div class="row">
-      <button class="btn" onclick="startGame('ai')">VS COMPUTER</button>
-      <button class="btn alt" onclick="startGame('pvp')">2 PLAYERS</button>
+      <button class="btn" onclick="showLevels('ai')">▶ CAMPAIGN</button>
+      <button class="btn alt" onclick="showLevels('pvp')">2 PLAYERS</button>
     </div>
+  </div>
+
+  <!-- LEVEL SELECT -->
+  <div class="overlay hide" id="levelSelect">
+    <div class="win-title" style="font-size:min(7vw,38px)" id="lsTitle">SELECT A LEVEL</div>
+    <div class="levels" id="levelGrid"></div>
+    <button class="btn alt" onclick="toMenu()">← BACK</button>
   </div>
 
   <!-- SHOP -->
   <div class="overlay hide" id="shop">
     <div class="shopwrap">
       <div class="shophead"><h2 id="shopTitle">🛒 Weapon Shop</h2><div class="coinpill" id="shopBalance">🪙 0 coins</div></div>
-      <div class="sub" style="font-size:12px;text-align:left;margin-bottom:8px">Buy a weapon to own it for the match, or tap an owned one to equip it. The fight is paused.</div>
+      <div class="sub" style="font-size:12px;text-align:left;margin-bottom:8px">Buy a weapon to own it, or tap an owned one to equip it. In the campaign your coins & weapons carry to the next level. The fight is paused.</div>
       <div class="grid" id="shopGrid"></div>
       <div style="text-align:center"><button class="btn gold" style="margin-top:14px" onclick="closeShop()">RESUME FIGHT</button></div>
     </div>
   </div>
 
-  <!-- WIN -->
-  <div class="overlay hide" id="winScreen">
+  <!-- RESULT (win/lose/cleared) -->
+  <div class="overlay hide" id="resultScreen">
     <div class="win-title" id="winText">VICTORY</div>
     <div class="sub" id="winSub"></div>
-    <button class="btn" onclick="location.reload()">PLAY AGAIN</button>
+    <div class="row" id="resultBtns"></div>
   </div>
 </div>
 
 <script>
 /* ============================================================
-   RAGDOLL AVENGERS — real-time free-roaming ragdoll brawl.
-   WASD move, mouse aim, Space fire. Earn coins from K.O.s to
-   buy mightier Marvel weapons in the shop.
+   RAGDOLL AVENGERS — Ragdoll-Archers-style campaign brawler.
+   Real-time: WASD move, mouse aim, Space fire. Earn coins from
+   K.O.s to buy Marvel weapons. 5 levels, saved progress.
    ============================================================ */
 const cv=document.getElementById('game'), ctx=cv.getContext('2d');
 const W=1000,H=600; cv.width=W; cv.height=H;
 function fit(){const s=Math.min(window.innerWidth/W,window.innerHeight/H);cv.style.width=(W*s)+'px';cv.style.height=(H*s)+'px';}
 window.addEventListener('resize',fit); fit();
 
-const GRAV=0.42, GROUND=H-60, TARGET_KO=7, COINS_PER_KO=2;
-const MOVE=2.6, JUMP=-12, ANCHG=0.62, BASE_POWER=19;
+const GRAV=0.42, GROUND=H-48, COINS_PER_KO=2;
+const MOVE=2.6, JUMP=-12.5, ANCHG=0.62, BASE_POWER=19;
 let wind=0, shake=0, paused=false;
 
 const WEAPONS=[
@@ -169,39 +175,74 @@ const WEAPONS=[
 ];
 const wById=id=>WEAPONS.find(w=>w.id===id);
 
+/* ---------------- LEVELS ---------------- */
+// plats: {x,y,w,type:'tower'|'float'}  y = top surface. spawn = [x1,x2].
+const LEVELS=[
+  {name:'Rooftops', theme:{skyA:'#bfe6ff',skyB:'#79c0ee',sun:'#fff3b0',hill:'#6cbf59',hill2:'#57a84a',stone:'#c9b79b',stone2:'#a8967a',night:false},
+   plats:[{x:70,y:GROUND-130,w:170,type:'tower'},{x:760,y:GROUND-130,w:170,type:'tower'}],
+   spawn:[155,845], target:5, ai:{acc:1.5,rate:0.05,coins:0,wpn:'arrow'}},
+  {name:'Sunset Mesas', theme:{skyA:'#ffd29b',skyB:'#ff8f6b',sun:'#fff0c0',hill:'#b5654a',hill2:'#8f4a36',stone:'#d1a06a',stone2:'#a87a4c',night:false},
+   plats:[{x:50,y:GROUND-150,w:150,type:'tower'},{x:800,y:GROUND-150,w:150,type:'tower'},{x:410,y:GROUND-70,w:180,type:'float'}],
+   spawn:[125,875], target:5, ai:{acc:1.15,rate:0.06,coins:2,wpn:'shield'}},
+  {name:'Sky Islands', theme:{skyA:'#a7d8ff',skyB:'#5fa9e0',sun:'#fff7cf',hill:'#7fb6e0',hill2:'#6aa0cc',stone:'#9fb7c9',stone2:'#7d95a8',night:false},
+   plats:[{x:40,y:GROUND-90,w:150,type:'float'},{x:410,y:GROUND-190,w:180,type:'float'},{x:810,y:GROUND-90,w:150,type:'float'}],
+   spawn:[115,885], target:6, ai:{acc:0.95,rate:0.07,coins:4,wpn:'spear'}},
+  {name:'Fortress', theme:{skyA:'#8fb0d8',skyB:'#5a6f9e',sun:'#ffe9b0',hill:'#4a5f7a',hill2:'#3a4c63',stone:'#b7b0a2',stone2:'#8f887a',night:false},
+   plats:[{x:40,y:GROUND-180,w:150,type:'tower'},{x:250,y:GROUND-90,w:120,type:'float'},{x:630,y:GROUND-90,w:120,type:'float'},{x:810,y:GROUND-180,w:150,type:'tower'}],
+   spawn:[115,885], target:6, ai:{acc:0.8,rate:0.085,coins:7,wpn:'repulsor'}},
+  {name:'Final Storm', theme:{skyA:'#3a3f66',skyB:'#171a30',sun:'#dfe6ff',hill:'#2a2f4a',hill2:'#1e2238',stone:'#6a6f8c',stone2:'#4a4f68',night:true},
+   plats:[{x:40,y:GROUND-160,w:140,type:'tower'},{x:230,y:GROUND-80,w:120,type:'float'},{x:440,y:GROUND-210,w:130,type:'float'},{x:650,y:GROUND-80,w:120,type:'float'},{x:820,y:GROUND-160,w:140,type:'tower'}],
+   spawn:[110,890], target:7, ai:{acc:0.6,rate:0.1,coins:12,wpn:'mjolnir'}},
+];
+let curIdx=0, curLevel=LEVELS[0], platforms=LEVELS[0].plats;
+
+function loadUnlocked(){try{return Math.max(0,+localStorage.getItem('ra_unlocked')||0);}catch(e){return 0;}}
+function saveUnlocked(n){try{localStorage.setItem('ra_unlocked',n);}catch(e){}}
+let unlocked=loadUnlocked();
+let campaign={coins:0,owned:['arrow'],sel:'arrow'};
+
+function surfaceAt(x,fromY){
+  let s=GROUND;
+  for(const pl of platforms) if(x>=pl.x&&x<=pl.x+pl.w && pl.y>=fromY-2 && pl.y<s) s=pl.y;
+  return s;
+}
+
 /* ---------------- RAGDOLL ---------------- */
-function makeRagdoll(x,dir,colors){
+function makeRagdoll(x,dir,colors,surf){
   const N=(px,py)=>({x:px,y:py,px:px,py:py});
   const head=N(x,0),neck=N(x,34),pelvis=N(x,100);
   const shoulderL=N(x-14,44),shoulderR=N(x+14,44),elbowL=N(x-24,74),elbowR=N(x+24,74);
   const handL=N(x-30,104),handR=N(x+30,104),hipL=N(x-12,104),hipR=N(x+12,104);
   const kneeL=N(x-14,150),kneeR=N(x+14,150),footL=N(x-16,196),footR=N(x+16,196);
   const pts=[head,neck,pelvis,shoulderL,shoulderR,elbowL,elbowR,handL,handR,hipL,hipR,kneeL,kneeR,footL,footR];
-  const shift=GROUND-Math.max(...pts.map(p=>p.y)); pts.forEach(p=>{p.y+=shift;p.py+=shift;});
+  const shift=surf-Math.max(...pts.map(p=>p.y)); pts.forEach(p=>{p.y+=shift;p.py+=shift;});
   const C=(a,b)=>({a,b,len:Math.hypot(a.x-b.x,a.y-b.y)});
   const cons=[C(head,neck),C(neck,pelvis),C(neck,shoulderL),C(neck,shoulderR),
     C(shoulderL,elbowL),C(elbowL,handL),C(shoulderR,elbowR),C(elbowR,handR),
     C(pelvis,hipL),C(pelvis,hipR),C(hipL,kneeL),C(kneeL,footL),C(hipR,kneeR),C(kneeR,footR),
     C(shoulderL,shoulderR),C(hipL,hipR),C(shoulderL,pelvis),C(shoulderR,pelvis)];
   return {pts,cons,dir,colors,head,neck,pelvis,handR,handL,footL,footR,
-    standing:true,hp:100,maxhp:100,anchorX:x,ay:GROUND,avy:0,grounded:true,
+    standing:true,hp:100,maxhp:100,anchorX:x,spawnX:x,ay:surf,avy:0,grounded:true,
     flop:0,downed:false,downTimer:0,aim:dir>0?0:Math.PI,cool:0,lastHit:-1};
 }
 function resetDoll(rd){
-  const f=makeRagdoll(rd.anchorX,rd.dir,rd.colors);
+  const surf=surfaceAt(rd.spawnX,0);
+  const f=makeRagdoll(rd.spawnX,rd.dir,rd.colors,surf);
   ['pts','cons','head','neck','pelvis','handR','handL','footL','footR'].forEach(k=>rd[k]=f[k]);
-  rd.standing=true;rd.hp=100;rd.ay=GROUND;rd.avy=0;rd.grounded=true;rd.flop=0;rd.downed=false;rd.downTimer=0;rd.cool=0;
+  rd.standing=true;rd.hp=100;rd.anchorX=rd.spawnX;rd.ay=surf;rd.avy=0;rd.grounded=true;rd.flop=0;rd.downed=false;rd.downTimer=0;rd.cool=0;
 }
+function land(p,surfY){const vx=p.x-p.px,vy=p.y-p.py;p.y=surfY;p.px=p.x+vx*0.35;p.py=p.y+vy*0.4;}
 function integrate(rd){
-  // anchor vertical (jump/gravity)
-  rd.avy+=ANCHG; rd.ay+=rd.avy;
-  if(rd.ay>=GROUND){rd.ay=GROUND;rd.avy=0;rd.grounded=true;} else rd.grounded=false;
+  const prevAy=rd.ay; rd.avy+=ANCHG; rd.ay+=rd.avy;
+  const surf=surfaceAt(rd.anchorX,prevAy);
+  if(rd.avy>=0 && rd.ay>=surf){rd.ay=surf;rd.avy=0;rd.grounded=true;} else rd.grounded=false;
   const damp=0.98;
   for(const p of rd.pts){
     let vx=(p.x-p.px)*damp, vy=(p.y-p.py)*damp;
     p.px=p.x;p.py=p.y;
     p.x+=vx; p.y+=vy+(rd.standing?0:GRAV*0.9);
-    if(p.y>GROUND){p.y=GROUND;p.px=p.x+vx*0.35;p.py=p.y+vy*0.4;}
+    if(p.y>GROUND)land(p,GROUND);
+    else for(const pl of platforms) if(p.x>pl.x&&p.x<pl.x+pl.w && p.py<=pl.y+3 && p.y>pl.y){land(p,pl.y);break;}
     if(p.x<12)p.x=12; if(p.x>W-12)p.x=W-12;
   }
   const iters=rd.standing?3:5;
@@ -210,35 +251,40 @@ function integrate(rd){
     const ox=dx*diff,oy=dy*diff;c.a.x-=ox;c.a.y-=oy;c.b.x+=ox;c.b.y+=oy;
   }
   if(rd.standing){
-    const b=rd.anchorX, y=rd.ay;
-    pull(rd.footL,b-16,y,.5); pull(rd.footR,b+16,y,.5);
-    pull(rd.pelvis,b,y-100,.14); pull(rd.head,b,y-196,.08);
-    // aim arm points along aim
+    const b=rd.anchorX,y=rd.ay;
+    pull(rd.footL,b-16,y,.5);pull(rd.footR,b+16,y,.5);
+    pull(rd.pelvis,b,y-100,.14);pull(rd.head,b,y-196,.08);
     pull(rd.handR,rd.neck.x+Math.cos(rd.aim)*46,rd.neck.y+10+Math.sin(rd.aim)*46,.30);
   }
   if(rd.cool>0)rd.cool--;
-  if(rd.flop>0){rd.flop--; if(rd.flop===0&&!rd.downed&&rd.hp>0){rd.standing=true;rd.anchorX=clamp(rd.pelvis.x,40,W-40);rd.ay=GROUND;rd.avy=0;}}
+  if(rd.flop>0){rd.flop--;if(rd.flop===0&&!rd.downed&&rd.hp>0){rd.standing=true;rd.anchorX=clamp(rd.pelvis.x,30,W-30);rd.ay=surfaceAt(rd.anchorX,0);rd.avy=0;}}
 }
 function clamp(v,a,b){return v<a?a:v>b?b:v;}
 function pull(p,tx,ty,f){p.x+=(tx-p.x)*f;p.y+=(ty-p.y)*f;}
-function knock(rd,fx,fy,cx,cy,rad){
-  rd.standing=false; rd.flop=Math.max(rd.flop,70);
-  for(const p of rd.pts){const d=Math.hypot(p.x-cx,p.y-cy),f=Math.max(0,1-d/rad);
-    p.x+=fx*f;p.y+=fy*f;p.px+=fx*f*0.4;p.py+=fy*f*0.4;}
-}
+function knock(rd,fx,fy,cx,cy,rad){rd.standing=false;rd.flop=Math.max(rd.flop,70);
+  for(const p of rd.pts){const d=Math.hypot(p.x-cx,p.y-cy),f=Math.max(0,1-d/rad);p.x+=fx*f;p.y+=fy*f;p.px+=fx*f*0.4;p.py+=fy*f*0.4;}}
+
 function drawRagdoll(rd){
-  const c=rd.colors;ctx.lineCap='round';
+  const c=rd.colors;ctx.lineCap='round';ctx.lineJoin='round';
   const seg=(a,b,w,col)=>{ctx.strokeStyle=col;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();};
-  seg(rd.pts[9],rd.pts[11],11,c.body);seg(rd.pts[11],rd.pts[13],9,c.body);
-  seg(rd.pts[10],rd.pts[12],11,c.body);seg(rd.pts[12],rd.pts[14],9,c.body);
-  seg(rd.neck,rd.pelvis,20,c.body);
-  seg(rd.pts[3],rd.pts[5],9,c.limb);seg(rd.pts[5],rd.pts[7],7,c.limb);
-  seg(rd.pts[4],rd.pts[6],9,c.limb);seg(rd.pts[6],rd.pts[8],7,c.limb);
+  seg(rd.pts[9],rd.pts[11],12,c.body);seg(rd.pts[11],rd.pts[13],10,c.body);
+  seg(rd.pts[10],rd.pts[12],12,c.body);seg(rd.pts[12],rd.pts[14],10,c.body);
+  seg(rd.neck,rd.pelvis,22,c.body);
+  seg(rd.pts[3],rd.pts[5],10,c.limb);seg(rd.pts[5],rd.pts[7],8,c.limb);
+  seg(rd.pts[4],rd.pts[6],10,c.limb);seg(rd.pts[6],rd.pts[8],8,c.limb);
+  // bow in the aiming (right) hand — the archer look
+  if(rd.standing){
+    ctx.save();ctx.translate(rd.handR.x,rd.handR.y);ctx.rotate(rd.aim);
+    ctx.strokeStyle='#6b4a2b';ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,16,-1.35,1.35);ctx.stroke();
+    ctx.strokeStyle='#efe6d0';ctx.lineWidth=1.5;ctx.beginPath();
+    ctx.moveTo(Math.cos(-1.35)*16,Math.sin(-1.35)*16);ctx.lineTo(-5,0);ctx.lineTo(Math.cos(1.35)*16,Math.sin(1.35)*16);ctx.stroke();
+    ctx.restore();
+  }
   ctx.fillStyle=c.head;ctx.beginPath();ctx.arc(rd.head.x,rd.head.y,15,0,7);ctx.fill();
   ctx.strokeStyle=c.body;ctx.lineWidth=3;ctx.stroke();
   ctx.fillStyle=c.mask;ctx.beginPath();ctx.arc(rd.head.x+rd.dir*4,rd.head.y-2,5,0,7);ctx.fill();
-  if(rd.standing){ctx.fillStyle='#0007';ctx.fillRect(rd.head.x-16,rd.head.y-30,32,5);
-    ctx.fillStyle=rd.hp>40?'#7fe':'#f77';ctx.fillRect(rd.head.x-16,rd.head.y-30,32*Math.max(0,rd.hp)/100,5);}
+  if(rd.standing){ctx.fillStyle='#0007';ctx.fillRect(rd.head.x-16,rd.head.y-32,32,5);
+    ctx.fillStyle=rd.hp>40?'#7fe':'#f77';ctx.fillRect(rd.head.x-16,rd.head.y-32,32*Math.max(0,rd.hp)/100,5);}
 }
 
 /* ---------------- PROJECTILES ---------------- */
@@ -246,11 +292,11 @@ let shots=[], particles=[], floaters=[];
 function fire(rd,owner){
   if(rd.cool>0||rd.flop>0||rd.downed||!running)return;
   const w=wById(players[owner].sel); rd.cool=w.cd;
-  const o={x:rd.handR.x,y:rd.handR.y}, p=BASE_POWER*w.speed;
-  shots.push({owner,wep:w,x:o.x,y:o.y,vx:Math.cos(rd.aim)*p,vy:Math.sin(rd.aim)*p,
-    rot:0,spin:Math.random()*.4-.2,life:0,bounces:0,trail:[]});
+  const o={x:rd.handR.x,y:rd.handR.y},p=BASE_POWER*w.speed;
+  shots.push({owner,wep:w,x:o.x,y:o.y,vx:Math.cos(rd.aim)*p,vy:Math.sin(rd.aim)*p,rot:0,spin:Math.random()*.4-.2,life:0,bounces:0,trail:[]});
   spark(o.x,o.y,w.color);
 }
+function hitPlat(pr){for(const pl of platforms) if(pr.x>pl.x&&pr.x<pl.x+pl.w&&pr.y>pl.y&&pr.y<pl.y+16)return pl;return null;}
 function stepShots(){
   for(const pr of shots){
     const w=pr.wep;
@@ -261,20 +307,21 @@ function stepShots(){
     if(w.kind==='bounce'){
       if(pr.x<8||pr.x>W-8){pr.vx*=-0.86;pr.x=clamp(pr.x,8,W-8);pr.bounces++;spark(pr.x,pr.y,w.color);}
       if(pr.y>GROUND){pr.vy*=-0.82;pr.vx*=0.9;pr.y=GROUND;pr.bounces++;spark(pr.x,pr.y,w.color);}
+      const pl=hitPlat(pr); if(pl){pr.vy*=-0.82;pr.vx*=0.9;pr.y=pl.y;pr.bounces++;spark(pr.x,pr.y,w.color);}
       if(pr.y<8){pr.vy*=-0.82;pr.y=8;}
       if(pr.bounces>6){pr.dead=true;continue;}
     }
     const foe=dolls[1-pr.owner]; let hit=false;
     if(!foe.downed) for(const p of foe.pts) if(Math.hypot(p.x-pr.x,p.y-pr.y)<w.radius+11){impact(pr,pr.x,pr.y);hit=true;break;}
     if(hit)continue;
-    if(w.kind!=='bounce'&&pr.y>GROUND+4){impact(pr,pr.x,GROUND);continue;}
+    if(w.kind!=='bounce'){ if(pr.y>GROUND+4){impact(pr,pr.x,GROUND);continue;} const pl=hitPlat(pr); if(pl){impact(pr,pr.x,pl.y);continue;} }
     if(pr.x<-40||pr.x>W+40||pr.life>700)pr.dead=true;
   }
   shots=shots.filter(s=>!s.dead);
 }
 function impact(pr,x,y){
   pr.dead=true;
-  const w=pr.wep, splash=(w.kind==='explode'), rad=splash?(w.id==='snap'?150:82):42;
+  const w=pr.wep,splash=(w.kind==='explode'),rad=splash?(w.id==='snap'?150:82):42;
   boom(x,y,w.color,splash?(w.id==='snap'?60:34):16,splash);
   shake=Math.min(28,shake+(splash?(w.id==='snap'?26:16):8)+w.mass*3);
   dolls.forEach((d,i)=>{
@@ -297,22 +344,21 @@ function koDoll(i){
   const d=dolls[i]; if(d.downed)return;
   const scorer=(d.lastHit>=0&&d.lastHit!==i)?d.lastHit:(1-i);
   players[scorer].kills++; players[scorer].coins+=COINS_PER_KO;
-  d.downed=true; d.downTimer=90; d.standing=false; d.flop=90;
+  d.downed=true;d.downTimer=90;d.standing=false;d.flop=90;
   knock(d,(Math.random()*2-1)*12,-20,d.pelvis.x,d.pelvis.y,400);
-  shake=Math.max(shake,22); showKO(); updateHUD();
-  if(players[scorer].kills>=TARGET_KO){running=false;setTimeout(matchEnd,900);}
+  shake=Math.max(shake,22);showKO();updateHUD();
+  if(players[scorer].kills>=curLevel.target){running=false;setTimeout(()=>levelResult(scorer),900);}
 }
 
 /* ---------------- FX ---------------- */
 function spark(x,y,col){for(let i=0;i<6;i++)particles.push({x,y,vx:Math.random()*4-2,vy:Math.random()*4-2,life:20,col,r:2});}
 function blood(x,y,col){for(let i=0;i<10;i++){const a=Math.random()*7,s=Math.random()*4+1;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-1,life:30,col,r:Math.random()*3+1,g:.16});}}
-function boom(x,y,col,n,big){for(let i=0;i<n;i++){const a=Math.random()*7,s=Math.random()*(big?9:5)+2;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:big?46:26,col,r:Math.random()*4+2,g:.12});}
-  particles.push({x,y,vx:0,vy:0,life:16,col:'#fff',r:big?54:26,ring:true});}
+function boom(x,y,col,n,big){for(let i=0;i<n;i++){const a=Math.random()*7,s=Math.random()*(big?9:5)+2;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:big?46:26,col,r:Math.random()*4+2,g:.12});}particles.push({x,y,vx:0,vy:0,life:16,col:'#fff',r:big?54:26,ring:true});}
 function floatDmg(x,y,n){floaters.push({x,y,n,life:55});}
 function stepFX(){
   for(const p of particles){p.x+=p.vx;p.y+=p.vy;if(p.g)p.vy+=p.g;p.life--;if(p.ring)p.r+=3;}
   particles=particles.filter(p=>p.life>0);
-  for(const f of floaters){f.y-=0.8;f.life--;} floaters=floaters.filter(f=>f.life>0);
+  for(const f of floaters){f.y-=0.8;f.life--;}floaters=floaters.filter(f=>f.life>0);
   if(shake>0.3)shake*=0.86; else shake=0;
 }
 function drawFX(){
@@ -320,16 +366,13 @@ function drawFX(){
     if(p.ring){ctx.strokeStyle=p.col;ctx.lineWidth=3;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.stroke();}
     else{ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill();}}
   ctx.globalAlpha=1;ctx.textAlign='center';ctx.font='bold 20px Trebuchet MS';
-  for(const f of floaters){ctx.globalAlpha=Math.max(0,f.life/55);ctx.fillStyle='#fff';ctx.strokeStyle='#000';ctx.lineWidth=4;
-    ctx.strokeText('-'+f.n,f.x,f.y);ctx.fillText('-'+f.n,f.x,f.y);}
+  for(const f of floaters){ctx.globalAlpha=Math.max(0,f.life/55);ctx.fillStyle='#fff';ctx.strokeStyle='#000';ctx.lineWidth=4;ctx.strokeText('-'+f.n,f.x,f.y);ctx.fillText('-'+f.n,f.x,f.y);}
   ctx.globalAlpha=1;
 }
 function drawShots(){
   for(const pr of shots){const w=pr.wep;
-    for(let i=0;i<pr.trail.length;i++){const t=pr.trail[i];ctx.globalAlpha=i/pr.trail.length*0.6;
-      ctx.fillStyle=w.trail;ctx.beginPath();ctx.arc(t.x,t.y,w.radius*0.6*(i/pr.trail.length),0,7);ctx.fill();}
-    ctx.globalAlpha=1;ctx.save();ctx.translate(pr.x,pr.y);ctx.rotate(pr.rot);
-    ctx.font=(w.radius*2.2)+'px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(w.icon,0,0);ctx.restore();
+    for(let i=0;i<pr.trail.length;i++){const t=pr.trail[i];ctx.globalAlpha=i/pr.trail.length*0.6;ctx.fillStyle=w.trail;ctx.beginPath();ctx.arc(t.x,t.y,w.radius*0.6*(i/pr.trail.length),0,7);ctx.fill();}
+    ctx.globalAlpha=1;ctx.save();ctx.translate(pr.x,pr.y);ctx.rotate(pr.rot);ctx.font=(w.radius*2.2)+'px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(w.icon,0,0);ctx.restore();
     ctx.globalAlpha=.32;ctx.fillStyle=w.color;ctx.beginPath();ctx.arc(pr.x,pr.y,w.radius+4,0,7);ctx.fill();ctx.globalAlpha=1;}
 }
 
@@ -339,14 +382,21 @@ const keys={}, mouse={x:W/2,y:H/2};
 const P1COL={body:'#c62828',limb:'#e53935',head:'#ffd7b0',mask:'#1b3b8f'};
 const P2COL={body:'#1565c0',limb:'#1e88e5',head:'#ffd7b0',mask:'#b71c1c'};
 
-function startGame(m){
-  mode=m; running=true; paused=false; shots=[];
-  document.getElementById('menu').classList.add('hide');
-  dolls=[makeRagdoll(220,1,P1COL), makeRagdoll(W-220,-1,P2COL)];
-  players=[{kills:0,coins:0,owned:['arrow'],sel:'arrow'},{kills:0,coins:0,owned:['arrow'],sel:'arrow'}];
-  document.querySelector('#card2 .pname').innerHTML=(m==='ai'?'⚔️ ULTRON (AI)':'⚔️ PLAYER 2');
+function startLevel(idx){
+  curIdx=idx; curLevel=LEVELS[idx]; platforms=curLevel.plats;
+  running=true; paused=false; shots=[]; particles=[]; floaters=[];
+  hideAllOverlays();
+  const s1=surfaceAt(curLevel.spawn[0],0), s2=surfaceAt(curLevel.spawn[1],0);
+  dolls=[makeRagdoll(curLevel.spawn[0],1,P1COL,s1), makeRagdoll(curLevel.spawn[1],-1,P2COL,s2)];
+  const p1 = (mode==='ai') ? {kills:0,coins:campaign.coins,owned:campaign.owned.slice(),sel:campaign.sel}
+                           : {kills:0,coins:0,owned:['arrow'],sel:'arrow'};
+  const ai=curLevel.ai;
+  const p2 = {kills:0,coins:ai.coins,owned:['arrow'].concat(ai.wpn!=='arrow'?[ai.wpn]:[]),sel:ai.wpn};
+  players=[p1,(mode==='ai')?p2:{kills:0,coins:0,owned:['arrow'],sel:'arrow'}];
+  document.querySelector('#card2 .pname').innerHTML=(mode==='ai'?'🤖 ULTRON L'+(idx+1):'⚔️ PLAYER 2');
+  document.getElementById('levelchip').textContent='LEVEL '+(idx+1)+' — '+curLevel.name.toUpperCase();
   wind=(Math.random()*2-1)*1.2; updateHUD();
-  setMsg(m==='ai'?'Move WASD • aim mouse • SPACE fire • B shop':'P1: WASD+Space  •  P2: Arrows+/  •  B/M shop');
+  setMsg(mode==='ai'?'Move WASD • aim mouse • SPACE fire • B shop':'P1 WASD+Space   •   P2 Arrows+/   •   B/M shop');
 }
 
 function updateHUD(){
@@ -361,7 +411,7 @@ function updateHUD(){
   document.getElementById('w1').textContent=w1.icon+' '+w1.name;
   document.getElementById('w2').textContent=w2.icon+' '+w2.name;
   document.getElementById('shopCoins').textContent='🪙 '+players[0].coins;
-  document.getElementById('hint').textContent=`First to ${TARGET_KO} K.O.s  •  `+(wind>0.15?'Wind →':wind<-0.15?'← Wind':'Calm air')+`  •  ${w1.note}`;
+  document.getElementById('hint').textContent=`First to ${curLevel.target} K.O.s  •  `+(wind>0.15?'Wind →':wind<-0.15?'← Wind':'Calm air')+`  •  ${w1.note}`;
   buildOwned();
 }
 function setMsg(t){document.getElementById('msg').textContent=t;}
@@ -370,15 +420,12 @@ function buildOwned(){
   players[0].owned.forEach(id=>{const w=wById(id);const b=document.createElement('div');
     b.className='wbtn'+(id===players[0].sel?' sel':'');
     b.innerHTML=`<span>${w.icon}</span><small>${w.name.split(' ')[0]}</small>`;
-    b.onclick=()=>{players[0].sel=id;updateHUD();};box.appendChild(b);});
+    b.onclick=()=>{players[0].sel=id;if(mode==='ai')campaign.sel=id;updateHUD();};box.appendChild(b);});
 }
 
 /* ---------------- SHOP ---------------- */
 let shopFor=0;
-function openShop(pi){
-  if(!running)return; shopFor=pi; paused=true; buildShop();
-  document.getElementById('shop').classList.remove('hide');
-}
+function openShop(pi){if(!running)return;shopFor=pi;paused=true;buildShop();document.getElementById('shop').classList.remove('hide');}
 function closeShop(){paused=false;document.getElementById('shop').classList.add('hide');updateHUD();}
 function buildShop(){
   const P=players[shopFor];
@@ -389,17 +436,16 @@ function buildShop(){
     const owned=P.owned.includes(w.id),afford=P.coins>=w.cost,sel=P.sel===w.id;
     const card=document.createElement('div');
     card.className='card'+(owned?' owned':'')+(sel?' sel':'')+((!owned&&!afford)?' locked':'');
-    card.innerHTML=`<div class="tag">${owned?'OWNED':(afford?'BUY':'LOCKED')}</div><div class="ic">${w.icon}</div>
-      <div class="nm">${w.name}</div><div class="no">${w.note}</div>
-      <div class="cost">${w.cost===0?'FREE':('🪙 '+w.cost)} ${owned?'✓':''}</div>`;
+    card.innerHTML=`<div class="tag">${owned?'OWNED':(afford?'BUY':'LOCKED')}</div><div class="ic">${w.icon}</div><div class="nm">${w.name}</div><div class="no">${w.note}</div><div class="cost">${w.cost===0?'FREE':('🪙 '+w.cost)} ${owned?'✓':''}</div>`;
     card.onclick=()=>{
-      if(owned){P.sel=w.id;buildShop();updateHUD();}
-      else if(P.coins>=w.cost){P.coins-=w.cost;P.owned.push(w.id);P.sel=w.id;buildShop();updateHUD();}
+      if(owned){P.sel=w.id;syncCampaign(P);buildShop();updateHUD();}
+      else if(P.coins>=w.cost){P.coins-=w.cost;P.owned.push(w.id);P.sel=w.id;syncCampaign(P);buildShop();updateHUD();}
       else document.getElementById('shopBalance').textContent='Need 🪙'+w.cost+' — score more K.O.s!';
     };
     grid.appendChild(card);
   });
 }
+function syncCampaign(P){if(mode==='ai'&&shopFor===0){campaign.coins=P.coins;campaign.owned=P.owned.slice();campaign.sel=P.sel;}}
 
 /* ---------------- INPUT ---------------- */
 window.addEventListener('keydown',e=>{
@@ -410,33 +456,26 @@ window.addEventListener('keydown',e=>{
   else if((k==='b'||k==='m'||k==='escape')&&paused)closeShop();
 });
 window.addEventListener('keyup',e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;keys[k]=false;});
-cv.addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();
-  mouse.x=(e.clientX-r.left)/r.width*W; mouse.y=(e.clientY-r.top)/r.height*H;});
+cv.addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();mouse.x=(e.clientX-r.left)/r.width*W;mouse.y=(e.clientY-r.top)/r.height*H;});
 cv.addEventListener('mousedown',()=>{if(running&&!paused)fire(dolls[0],0);});
-// touch: tap side to move handled minimally — drag to aim + tap fire
-cv.addEventListener('touchstart',e=>{if(!running||paused)return;const r=cv.getBoundingClientRect();
-  const tx=(e.touches[0].clientX-r.left)/r.width*W,ty=(e.touches[0].clientY-r.top)/r.height*H;
-  mouse.x=tx;mouse.y=ty;fire(dolls[0],0);e.preventDefault();},{passive:false});
-cv.addEventListener('touchmove',e=>{const r=cv.getBoundingClientRect();
-  mouse.x=(e.touches[0].clientX-r.left)/r.width*W;mouse.y=(e.touches[0].clientY-r.top)/r.height*H;e.preventDefault();},{passive:false});
+cv.addEventListener('touchstart',e=>{if(!running||paused)return;const r=cv.getBoundingClientRect();mouse.x=(e.touches[0].clientX-r.left)/r.width*W;mouse.y=(e.touches[0].clientY-r.top)/r.height*H;fire(dolls[0],0);e.preventDefault();},{passive:false});
+cv.addEventListener('touchmove',e=>{const r=cv.getBoundingClientRect();mouse.x=(e.touches[0].clientX-r.left)/r.width*W;mouse.y=(e.touches[0].clientY-r.top)/r.height*H;e.preventDefault();},{passive:false});
 
 function control(){
-  // PLAYER 1
   const p1=dolls[0];
   if(!p1.flop&&!p1.downed){
-    if(keys['a'])p1.anchorX=clamp(p1.anchorX-MOVE,40,W-40);
-    if(keys['d'])p1.anchorX=clamp(p1.anchorX+MOVE,40,W-40);
+    if(keys['a'])p1.anchorX=clamp(p1.anchorX-MOVE,30,W-30);
+    if(keys['d'])p1.anchorX=clamp(p1.anchorX+MOVE,30,W-30);
     if(keys['w']&&p1.grounded){p1.avy=JUMP;p1.grounded=false;}
     p1.aim=Math.atan2(mouse.y-p1.handR.y,mouse.x-p1.handR.x);
     p1.dir=Math.cos(p1.aim)>=0?1:-1;
     if(keys[' '])fire(p1,0);
   }
-  // PLAYER 2
   const p2=dolls[1];
   if(mode==='pvp'){
     if(!p2.flop&&!p2.downed){
-      if(keys['arrowleft'])p2.anchorX=clamp(p2.anchorX-MOVE,40,W-40);
-      if(keys['arrowright'])p2.anchorX=clamp(p2.anchorX+MOVE,40,W-40);
+      if(keys['arrowleft'])p2.anchorX=clamp(p2.anchorX-MOVE,30,W-30);
+      if(keys['arrowright'])p2.anchorX=clamp(p2.anchorX+MOVE,30,W-30);
       if(keys['arrowup']&&p2.grounded){p2.avy=JUMP;p2.grounded=false;}
       if(keys[','])p2.aim-=0.035; if(keys['.'])p2.aim+=0.035;
       p2.dir=Math.cos(p2.aim)>=0?1:-1;
@@ -449,60 +488,113 @@ function control(){
 let aiTick=0;
 function aiControl(rd){
   if(rd.flop||rd.downed)return;
-  const foe=dolls[0], P=players[1];
-  aiTick++;
-  // buy upgrades occasionally
-  if(aiTick%90===0){
-    const buyable=WEAPONS.filter(w=>!P.owned.includes(w.id)&&w.cost<=P.coins).sort((a,b)=>b.cost-a.cost);
-    if(buyable.length){P.coins-=buyable[0].cost;P.owned.push(buyable[0].id);P.sel=buyable[0].id;updateHUD();}
-  }
+  const foe=dolls[0],P=players[1],A=curLevel.ai; aiTick++;
+  if(aiTick%80===0){const buyable=WEAPONS.filter(w=>!P.owned.includes(w.id)&&w.cost<=P.coins).sort((a,b)=>b.cost-a.cost);
+    if(buyable.length){P.coins-=buyable[0].cost;P.owned.push(buyable[0].id);P.sel=buyable[0].id;updateHUD();}}
   const dx=foe.pelvis.x-rd.pelvis.x, dist=Math.abs(dx);
-  // keep a comfy range
-  if(dist<260)rd.anchorX=clamp(rd.anchorX+Math.sign(dx)* -MOVE*0.7,40,W-40);
-  else if(dist>520)rd.anchorX=clamp(rd.anchorX+Math.sign(dx)*MOVE*0.7,40,W-40);
-  if(rd.grounded&&Math.random()<0.01)rd.avy=JUMP;
-  // aim toward foe with arc + noise
-  const w=wById(P.sel), o=rd.handR;
-  const gx=foe.pelvis.x-o.x, gy=foe.pelvis.y-o.y;
-  const lift=Math.min(180, Math.abs(gx)*0.35*w.mass);
+  if(dist<260)rd.anchorX=clamp(rd.anchorX-Math.sign(dx)*MOVE*0.6,30,W-30);
+  else if(dist>560)rd.anchorX=clamp(rd.anchorX+Math.sign(dx)*MOVE*0.6,30,W-30);
+  if(rd.grounded&&Math.random()<0.012)rd.avy=JUMP;
+  const w=wById(P.sel),o=rd.handR,gx=foe.pelvis.x-o.x,gy=foe.pelvis.y-o.y;
+  const lift=Math.min(180,Math.abs(gx)*0.35*w.mass);
   let ang=Math.atan2(gy-lift,gx);
-  const noise=(Math.random()*2-1)*0.10*(foe.hp>50?1.4:0.7);
-  rd.aim=rd.aim*0.7+(ang+noise)*0.3;
-  rd.dir=Math.cos(rd.aim)>=0?1:-1;
-  if(rd.cool<=0&&Math.random()<0.08)fire(rd,1);
+  const noise=(Math.random()*2-1)*0.13*A.acc*(foe.hp>50?1.3:0.7);
+  rd.aim=rd.aim*0.7+(ang+noise)*0.3; rd.dir=Math.cos(rd.aim)>=0?1:-1;
+  if(rd.cool<=0&&Math.random()<A.rate)fire(rd,1);
 }
 
-/* ---------------- KO / WIN ---------------- */
-function showKO(){const b=document.getElementById('koban');b.style.opacity=1;setTimeout(()=>b.style.opacity=0,800);}
-function matchEnd(){
-  const s=document.getElementById('winScreen');s.classList.remove('hide');
-  const names=['PLAYER 1',mode==='ai'?'ULTRON':'PLAYER 2'];
-  const winner=players[0].kills>=players[1].kills?0:1;
-  document.getElementById('winText').innerHTML='🏆 '+names[winner]+' WINS!';
-  document.getElementById('winSub').textContent=`Final  ${players[0].kills} : ${players[1].kills}  —  `+
-    (winner===0?'Earth\'s mightiest!':(mode==='ai'?'The machine reigns. Rematch?':'Champion of the arena!'));
+/* ---------------- SCREENS ---------------- */
+function hideAllOverlays(){['menu','levelSelect','shop','resultScreen'].forEach(id=>document.getElementById(id).classList.add('hide'));}
+function toMenu(){running=false;paused=false;hideAllOverlays();document.getElementById('menu').classList.remove('hide');}
+function showLevels(m){
+  mode=m; if(m==='ai'){campaign={coins:0,owned:['arrow'],sel:'arrow'};}
+  document.getElementById('menu').classList.add('hide');
+  document.getElementById('lsTitle').textContent=m==='ai'?'CAMPAIGN — SELECT LEVEL':'2 PLAYERS — SELECT ARENA';
+  const grid=document.getElementById('levelGrid');grid.innerHTML='';
+  LEVELS.forEach((L,i)=>{
+    const open=(m==='pvp')||i<=unlocked;
+    const el=document.createElement('div');
+    el.className='lvl'+(open?'':' locked');
+    el.innerHTML=`<div class="no">LEVEL ${i+1}</div><div class="nm">${L.name}</div>
+      <div class="th">Target ${L.target} K.O.s ${m==='ai'?'• AI '+['','★','★★','★★★','★★★★','★★★★★'][i+1]:''}</div>
+      ${open?(i<unlocked&&m==='ai'?'<div class="done">✓</div>':''):'<div class="lock">🔒</div>'}`;
+    if(open)el.onclick=()=>startLevel(i);
+    grid.appendChild(el);
+  });
+  document.getElementById('levelSelect').classList.remove('hide');
 }
+function showKO(){const b=document.getElementById('koban');b.style.opacity=1;setTimeout(()=>b.style.opacity=0,800);}
+function levelResult(scorer){
+  const s=document.getElementById('resultScreen');s.classList.remove('hide');
+  const btns=document.getElementById('resultBtns');btns.innerHTML='';
+  const playerWon=(mode==='pvp')?false:(scorer===0);
+  if(mode==='pvp'){
+    document.getElementById('winText').innerHTML='🏆 '+(scorer===0?'PLAYER 1':'PLAYER 2')+' WINS!';
+    document.getElementById('winSub').textContent=`Final  ${players[0].kills} : ${players[1].kills}`;
+    addBtn(btns,'REMATCH','gold',()=>startLevel(curIdx));
+    addBtn(btns,'☰ ARENAS','alt',()=>showLevels('pvp'));
+    return;
+  }
+  if(playerWon){
+    campaign.coins=players[0].coins;campaign.owned=players[0].owned.slice();campaign.sel=players[0].sel;
+    const last=curIdx>=LEVELS.length-1;
+    if(!last){unlocked=Math.max(unlocked,curIdx+1);saveUnlocked(unlocked);}
+    document.getElementById('winText').innerHTML=last?'🏆 CAMPAIGN COMPLETE!':'✅ LEVEL '+(curIdx+1)+' CLEARED';
+    document.getElementById('winSub').textContent=last
+      ?`You conquered all ${LEVELS.length} levels as Earth's mightiest archer!`
+      :`Score ${players[0].kills}:${players[1].kills}. You carry 🪙${campaign.coins} and your arsenal onward.`;
+    if(!last)addBtn(btns,'NEXT LEVEL ▶','gold',()=>startLevel(curIdx+1));
+    addBtn(btns,'☰ LEVELS','alt',()=>showLevels('ai'));
+    if(last)addBtn(btns,'PLAY AGAIN','',()=>{unlocked=unlocked;showLevels('ai');});
+  }else{
+    document.getElementById('winText').innerHTML='💥 DEFEATED';
+    document.getElementById('winSub').textContent=`Ultron won ${players[1].kills}:${players[0].kills}. Try again — you keep your coins & weapons.`;
+    addBtn(btns,'RETRY LEVEL','gold',()=>startLevel(curIdx));
+    addBtn(btns,'☰ LEVELS','alt',()=>showLevels('ai'));
+  }
+}
+function addBtn(box,label,cls,fn){const b=document.createElement('button');b.className='btn'+(cls?' '+cls:'');b.textContent=label;b.onclick=fn;box.appendChild(b);}
 
 /* ---------------- WORLD / LOOP ---------------- */
-let stars=[];for(let i=0;i<70;i++)stars.push({x:Math.random()*W,y:Math.random()*GROUND*0.8,r:Math.random()*1.6,tw:Math.random()*7});
+let clouds=[];for(let i=0;i<6;i++)clouds.push({x:Math.random()*W,y:40+Math.random()*160,s:0.2+Math.random()*0.3,r:30+Math.random()*40});
+let stars=[];for(let i=0;i<60;i++)stars.push({x:Math.random()*W,y:Math.random()*GROUND*0.7,r:Math.random()*1.5,tw:Math.random()*7});
 function drawWorld(){
-  ctx.clearRect(0,0,W,H);
-  const g=ctx.createRadialGradient(W/2,H*0.2,50,W/2,H*0.2,W);
-  g.addColorStop(0,'#243768');g.addColorStop(1,'#0b1020');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-  for(const s of stars){s.tw+=0.05;ctx.globalAlpha=0.5+Math.sin(s.tw)*0.4;ctx.fillStyle='#cfe0ff';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,7);ctx.fill();}
-  ctx.globalAlpha=1;ctx.fillStyle='#0e1836';
-  for(let i=0;i<24;i++){const bw=W/24,bh=40+((i*57)%110);ctx.fillRect(i*bw,GROUND-bh,bw-3,bh);}
-  ctx.fillStyle='#1c2b1a';ctx.fillRect(0,GROUND,W,H-GROUND);
-  ctx.fillStyle='#2c4526';ctx.fillRect(0,GROUND,W,6);
+  const T=curLevel.theme;
+  const g=ctx.createLinearGradient(0,0,0,GROUND);g.addColorStop(0,T.skyA);g.addColorStop(1,T.skyB);ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  if(T.night){for(const s of stars){s.tw+=0.05;ctx.globalAlpha=0.4+Math.sin(s.tw)*0.4;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,7);ctx.fill();}ctx.globalAlpha=1;
+    ctx.fillStyle=T.sun;ctx.beginPath();ctx.arc(W-140,110,34,0,7);ctx.fill();ctx.fillStyle=T.skyA;ctx.beginPath();ctx.arc(W-124,100,30,0,7);ctx.fill();}
+  else{ctx.fillStyle=T.sun;ctx.globalAlpha=.9;ctx.beginPath();ctx.arc(150,110,46,0,7);ctx.fill();ctx.globalAlpha=1;
+    for(const c of clouds){c.x+=c.s;if(c.x>W+80)c.x=-80;ctx.fillStyle='#ffffffcc';
+      ctx.beginPath();ctx.arc(c.x,c.y,c.r,0,7);ctx.arc(c.x+c.r*0.9,c.y+6,c.r*0.75,0,7);ctx.arc(c.x-c.r*0.9,c.y+8,c.r*0.7,0,7);ctx.fill();}}
+  // rolling hills
+  ctx.fillStyle=T.hill2;hill(GROUND-30,120,0);
+  ctx.fillStyle=T.hill;hill(GROUND-10,90,60);
+  // grass ground
+  ctx.fillStyle=T.hill;ctx.fillRect(0,GROUND,W,H-GROUND);
+  ctx.fillStyle=T.hill2;ctx.fillRect(0,GROUND,W,5);
+  // platforms / towers
+  for(const pl of platforms)drawPlatform(pl,T);
+}
+function hill(base,amp,phase){ctx.beginPath();ctx.moveTo(0,H);
+  for(let x=0;x<=W;x+=20)ctx.lineTo(x,base-Math.sin((x+phase)/150)*amp*0.3-amp*0.2);
+  ctx.lineTo(W,H);ctx.closePath();ctx.fill();}
+function drawPlatform(pl,T){
+  const bottom = pl.type==='tower'?H:pl.y+22;
+  ctx.fillStyle=T.stone2;ctx.fillRect(pl.x,pl.y,pl.w,bottom-pl.y);
+  ctx.fillStyle=T.stone;ctx.fillRect(pl.x,pl.y,pl.w,10);           // lit top cap
+  // brick lines
+  ctx.strokeStyle='#00000022';ctx.lineWidth=1;
+  for(let y=pl.y+10;y<bottom;y+=16){ctx.beginPath();ctx.moveTo(pl.x,y);ctx.lineTo(pl.x+pl.w,y);ctx.stroke();}
+  for(let x=pl.x+18;x<pl.x+pl.w;x+=32){ctx.beginPath();ctx.moveTo(x,pl.y+10);ctx.lineTo(x,bottom);ctx.stroke();}
+  ctx.strokeStyle='#0004';ctx.lineWidth=2;ctx.strokeRect(pl.x,pl.y,pl.w,bottom-pl.y);
 }
 function drawAimGuide(rd,forP1){
   if(rd.flop||rd.downed)return;
   const w=wById(players[forP1?0:1].sel),o={x:rd.handR.x,y:rd.handR.y},p=BASE_POWER*w.speed;
   let vx=Math.cos(rd.aim)*p,vy=Math.sin(rd.aim)*p,x=o.x,y=o.y;
-  ctx.setLineDash([2,7]);ctx.strokeStyle=forP1?'#ffffff77':'#ff9a9a66';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(x,y);
+  ctx.setLineDash([2,7]);ctx.strokeStyle=forP1?'#ffffffcc':'#ffb0b0aa';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(x,y);
   for(let i=0;i<34;i++){vy+=GRAV*w.mass*(w.kind==='beam'?0.35:1);vx+=wind*0.02;x+=vx;y+=vy;if(y>GROUND||x<0||x>W)break;ctx.lineTo(x,y);}
   ctx.stroke();ctx.setLineDash([]);
-  // muzzle + cooldown ring
   ctx.fillStyle=rd.cool>0?'#888':w.color;ctx.beginPath();ctx.arc(o.x,o.y,4,0,7);ctx.fill();
 }
 function loop(){
@@ -512,18 +604,12 @@ function loop(){
   if(dolls.length){
     if(running&&!paused){
       control();
-      dolls.forEach(d=>{
-        if(d.downed){d.downTimer--; if(d.downTimer<=0){resetDoll(d);}}
-        integrate(d);
-      });
-      stepShots(); stepFX();
+      dolls.forEach(d=>{if(d.downed){d.downTimer--;if(d.downTimer<=0)resetDoll(d);}integrate(d);});
+      stepShots();stepFX();
     }
     dolls.forEach(drawRagdoll);
-    if(running&&!paused){
-      drawAimGuide(dolls[0],true);
-      if(mode==='pvp')drawAimGuide(dolls[1],false);
-    }
-    drawShots(); drawFX();
+    if(running&&!paused){drawAimGuide(dolls[0],true);if(mode==='pvp')drawAimGuide(dolls[1],false);}
+    drawShots();drawFX();
   }
   ctx.restore();
   requestAnimationFrame(loop);
