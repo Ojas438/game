@@ -1,14 +1,21 @@
 // AwardInput.jsx
 // The paste box: a large textarea for the raw award-letter text and the
-// "Break it down" button. It holds no logic of its own — it hands the text up
-// to App, which runs the parser.
+// "Break it down" button, plus a "Try a sample" shortcut. It holds no logic of
+// its own — it hands the text up to App, which runs the parser.
+
+import { SAMPLE_LETTER } from '../sampleLetter.js';
 
 export default function AwardInput({ text, onChange, onSubmit }) {
   return (
     <section className="card input-card">
-      <label htmlFor="award-text" className="input-label">
-        Paste the text of your financial aid award letter
-      </label>
+      <div className="input-header">
+        <label htmlFor="award-text" className="input-label">
+          Paste the text of your financial aid award letter
+        </label>
+        <button className="link-button" onClick={() => onChange(SAMPLE_LETTER)}>
+          Try a sample
+        </button>
+      </div>
       <textarea
         id="award-text"
         className="award-textarea"

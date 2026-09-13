@@ -10,13 +10,18 @@ import AwardInput from './components/AwardInput.jsx';
 import HonestCostBox from './components/HonestCostBox.jsx';
 import UnknownList from './components/UnknownList.jsx';
 import ActionPanel from './components/ActionPanel.jsx';
+import SourceView from './components/SourceView.jsx';
 
 export default function App() {
   const [text, setText] = useState('');
   const [result, setResult] = useState(null);
+  // The exact text that was analyzed, so highlighting lines up even if the
+  // user keeps editing the textarea afterward.
+  const [analyzedText, setAnalyzedText] = useState('');
 
   function handleBreakItDown() {
     setResult(analyze(text));
+    setAnalyzedText(text);
   }
 
   return (
@@ -40,6 +45,7 @@ export default function App() {
             <HonestCostBox cost={result.cost} />
             <ActionPanel dates={result.dates} />
             <UnknownList lineItems={result.lineItems} />
+            <SourceView text={analyzedText} analysis={result} />
           </div>
         )}
       </main>

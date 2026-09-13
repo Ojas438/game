@@ -53,10 +53,28 @@ body {
 }
 
 /* Input */
+.input-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+
 .input-label {
   display: block;
   font-weight: 600;
-  margin-bottom: 10px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  white-space: nowrap;
 }
 
 .award-textarea {
@@ -187,6 +205,34 @@ body {
 .unknown-label { font-weight: 600; }
 .unknown-amount { font-variant-numeric: tabular-nums; }
 .unknown-list.ok h2 { color: var(--grant); }
+
+/* Source view (highlighted original letter) */
+.source-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  margin: 12px 0 0;
+  background: #fbfcfd;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  overflow-x: auto;
+}
+
+.mark {
+  border-radius: 4px;
+  padding: 1px 3px;
+  font-weight: 600;
+}
+.mark-grant { background: #d9f2e3; color: #12633a; }
+.mark-loan { background: #fbdcd6; color: #a02c1c; }
+.mark-work_study { background: #f7e9c6; color: #8a5a10; }
+.mark-cost { background: #e6ebf1; color: #40566e; }
+.mark-unknown { background: transparent; outline: 1.5px dashed #99a6b5; }
+.mark-date { color: var(--ink); }
+.mark-deadline { text-decoration: underline; text-decoration-color: var(--loan); font-weight: 700; }
 
 .app-footer {
   color: var(--muted);
