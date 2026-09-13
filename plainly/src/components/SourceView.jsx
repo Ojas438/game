@@ -1,7 +1,9 @@
 // SourceView.jsx
-// Shows the original pasted letter with every amount and date highlighted in
-// place, colored by what Plainly decided each one is. This lets the family
-// check our reading against their actual letter, line by line.
+// The "original" side of the Plain English version card. Shows the letter's own
+// text, verbatim, with every amount and date highlighted in place and colored
+// by category. Lets a family check our reading against their actual letter.
+// Renders as an inner pane (no card of its own); the wrapping PlainEnglish card
+// supplies the heading.
 
 import { buildRanges, buildSegments } from '../parser/highlight.js';
 
@@ -9,11 +11,13 @@ export default function SourceView({ text, analysis }) {
   const segments = buildSegments(text, buildRanges(analysis));
 
   return (
-    <section className="card source-view">
-      <h2>Your letter, marked up</h2>
-      <p className="hint">
-        Grants are green, loans red, work-study amber, costs gray, and unrecognized
-        amounts are outlined. Dates that look like deadlines are underlined.
+    <div className="pe-side">
+      <div className="pe-side-head">
+        <h3>Original letter</h3>
+      </div>
+      <p className="pe-legend">
+        Grants green · loans red · work-study amber · costs gray · unrecognized outlined ·
+        deadline dates underlined.
       </p>
       <pre className="source-text">
         {segments.map((seg, i) => {
@@ -29,6 +33,6 @@ export default function SourceView({ text, analysis }) {
           );
         })}
       </pre>
-    </section>
+    </div>
   );
 }

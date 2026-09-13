@@ -10,10 +10,10 @@ import { analyze } from './parser/analyze.js';
 import { honestCost } from './calc/honestCost.js';
 import AwardInput from './components/AwardInput.jsx';
 import HonestCostBox from './components/HonestCostBox.jsx';
-import UnknownList from './components/UnknownList.jsx';
+import GrantsVsLoans from './components/GrantsVsLoans.jsx';
+import TermsExplained from './components/TermsExplained.jsx';
 import ActionPanel from './components/ActionPanel.jsx';
-import SourceView from './components/SourceView.jsx';
-import ExplainPanel from './components/ExplainPanel.jsx';
+import PlainEnglish from './components/PlainEnglish.jsx';
 
 export default function App() {
   const [text, setText] = useState('');
@@ -42,7 +42,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Plainly</h1>
+        <h1>Aid Helper</h1>
         <p className="tagline">
           Award letters mix loans in with grants and call it all &ldquo;aid.&rdquo; Paste
           yours to see what you actually pay.
@@ -57,11 +57,22 @@ export default function App() {
             {result.academicYear && (
               <p className="academic-year">Academic year: {result.academicYear.raw}</p>
             )}
-            <HonestCostBox cost={result.cost} />
-            <ExplainPanel cost={result.cost} academicYear={result.academicYear?.raw} />
-            <ActionPanel dates={result.dates} />
-            <UnknownList lineItems={result.lineItems} onReclassify={reclassify} />
-            <SourceView text={analyzedText} analysis={result} />
+            <div className="results-grid">
+              <ActionPanel dates={result.dates} />
+              <HonestCostBox cost={result.cost} />
+              <GrantsVsLoans
+                lineItems={result.lineItems}
+                cost={result.cost}
+                onReclassify={reclassify}
+              />
+              <TermsExplained lineItems={result.lineItems} />
+              <PlainEnglish
+                cost={result.cost}
+                academicYear={result.academicYear?.raw}
+                text={analyzedText}
+                analysis={result}
+              />
+            </div>
           </div>
         )}
       </main>

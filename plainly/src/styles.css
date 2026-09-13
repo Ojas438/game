@@ -26,9 +26,9 @@ body {
 }
 
 .app {
-  max-width: 780px;
+  max-width: 1280px; /* max-w-7xl */
   margin: 0 auto;
-  padding: 32px 20px 64px;
+  padding: 32px 24px 64px; /* px-6 side gutter */
 }
 
 .app-header h1 {
@@ -312,7 +312,94 @@ body {
   margin-top: 24px;
 }
 
+/* ============================================================
+   Results as a grid of labeled cards
+   ============================================================ */
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr;      /* stacked below 1024px */
+  gap: 18px;
+  align-items: start;
+}
+/* Two columns on wide screens; full-width cards span both. */
+@media (min-width: 1024px) {
+  .results-grid { grid-template-columns: 1fr 1fr; }
+  .span-all { grid-column: 1 / -1; }
+}
+
+/* Shared row primitive: label on the left, number on the right. */
+.rows { display: flex; flex-direction: column; }
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 14px;
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
+}
+.rows .row:first-child { border-top: none; }
+.row-label { color: var(--ink); }
+.row-num { font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+.row-good .row-num { color: var(--grant); }
+.row-loan .row-num { color: var(--loan); }
+.row-work .row-num { color: var(--work); }
+.row-cash .row-num { color: var(--cash); }
+.row-total { border-top: 2px solid var(--ink); }
+.row-total .row-label { font-weight: 700; }
+.row-total .row-num { font-weight: 700; font-size: 1.15rem; }
+.rows-subhead { font-size: 0.9rem; color: var(--muted); margin: 16px 0 2px; }
+
+.none-found { color: var(--muted); font-style: italic; margin: 8px 0 0; }
+
+/* "What you must do and by when" — largest type, top, full width. */
+.action-panel h2 { font-size: 1.5rem; }
+.action-panel .deadlines li { padding: 14px 0; }
+.action-panel .deadline-date { font-size: 1.5rem; line-height: 1.2; }
+.action-panel .deadline-context { font-size: 1.05rem; }
+
+/* Grants vs loans — two internal columns. */
+.gvl-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.gvl-col { border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.gvl-grant { background: #f4fbf7; }
+.gvl-loan { background: #fdf5f3; }
+.gvl-col-head { display: flex; flex-direction: column; margin-bottom: 6px; }
+.gvl-col-title { font-weight: 700; }
+.gvl-col-note { font-size: 0.78rem; color: var(--muted); }
+.gvl-review { margin-top: 16px; }
+.gvl-review-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.gvl-review-head h3 { margin: 0; font-size: 1rem; }
+.review-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.review-list li { padding: 8px 0; border-top: 1px solid var(--line); }
+.review-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.review-row .row-label { flex: 1 1 45%; min-width: 130px; font-weight: 600; }
+.review-row .row-num { color: var(--muted); }
+
+/* Terms explained — term | one-sentence definition. */
+.terms-list { display: flex; flex-direction: column; }
+.term-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 30%) 1fr;
+  gap: 14px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+.terms-list .term-row:first-child { border-top: none; }
+.term-name { font-weight: 600; }
+.term-def { color: var(--muted); }
+
+/* Plain English version — simplified | original, side by side. */
+.pe-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
+@media (min-width: 900px) { .pe-grid { grid-template-columns: 1fr 1fr; } }
+.pe-side-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+.pe-side-head h3 { margin: 0; font-size: 1.05rem; }
+.pe-legend { color: var(--muted); font-size: 0.8rem; margin: 0 0 8px; }
+
+@media (max-width: 640px) {
+  .gvl-cols { grid-template-columns: 1fr; }
+}
 @media (max-width: 560px) {
   .breakdown { grid-template-columns: 1fr; }
   .app-header h1 { font-size: 2rem; }
+  .action-panel h2 { font-size: 1.25rem; }
+  .action-panel .deadline-date { font-size: 1.25rem; }
 }
