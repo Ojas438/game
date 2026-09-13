@@ -59,7 +59,6 @@ async function suggest(client, items) {
   const response = await client.messages.create({
     model: MODEL,
     max_tokens: 1024,
-    output_config: { effort: 'low' },
     system:
       'You help a family read a college financial aid award letter. For each ' +
       'line item, decide which category best fits its NAME:\n' +
@@ -104,7 +103,6 @@ async function explain(client, summary, academicYear) {
   const response = await client.messages.create({
     model: MODEL,
     max_tokens: 1024,
-    output_config: { effort: 'low' },
     system:
       'You explain a college financial aid award to a family in plain, warm, ' +
       'non-judgmental language at about an 8th-grade reading level. ' +
