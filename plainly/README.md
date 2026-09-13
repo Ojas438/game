@@ -23,6 +23,12 @@ npm test         # run parser + calculator unit tests
 npm run build    # production build (deploys to Vercel)
 ```
 
+## Deploying to Vercel
+
+The app lives in the `plainly/` subdirectory, so in the Vercel project settings
+set **Root Directory** to `plainly`. Framework (Vite), build command, output
+directory, and the SPA rewrite are already declared in `plainly/vercel.json`.
+
 ## How it works
 
 The logic is pure functions, kept separate from the React components so it can
