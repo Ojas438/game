@@ -81,38 +81,69 @@ function toNumber(raw) {
   return Number(raw.replace(/[^0-9.]/g, ''));
 }
 
-function extractAmounts(text) {
-  const amounts = [];
-  for (const m of text.matchAll(AMOUNT_RE)) {
-    const raw = m[0];
-    const index = m.index;
-    const endIndex = index + raw.length;
-    const { start, end } = lineBounds(text, index);
+// Build one amount record for a regex match.
+function amountAt(text, raw, index) {
+  const endIndex = index + raw.length;
+  const { start, end } = lineBounds(text, index);
 
-    // The label is the text on the same line before the amount. If the amount
-    // comes first on the line, fall back to the text after it.
-    let before = text.slice(start, index);
-    let label = before.replace(/[\s:.–—-]+$/, '').trim();
-    let labelStartInLine = before.length - before.trimStart().length;
-    let labelIndex = start + labelStartInLine;
+  // The label is the text on the same line before the amount. If the amount
+  // comes first on the line, fall back to the text after it.
+  const before = text.slice(start, index);
+  let label = before.replace(/[\s:.–—-]+$/, '').trim();
+  let labelIndex = start + (before.length - before.trimStart().length);
 
-    if (!label) {
-      const after = text.slice(endIndex, end);
-      label = after.replace(/^[\s:.–—-]+/, '').trim();
-      labelIndex = label ? endIndex + (after.length - after.trimStart().length) : index;
-    }
-
-    amounts.push({
-      value: toNumber(raw),
-      raw,
-      index,
-      endIndex,
-      label,
-      labelIndex,
-      line: text.slice(start, end).trim(),
-    });
+  if (!label) {
+    const after = text.slice(endIndex, end);
+    label = after.replace(/^[\s:.–—-]+/, '').trim();
+    labelIndex = label ? endIndex + (after.length - after.trimStart().length) : index;
   }
-  return amounts;
+
+  return { value: toNumber(raw), raw, index, endIndex, label, labelIndex, line: text.slice(start, end).trim(), lineStart: start };
+}
+
+// The leading label of a line = the text before its first amount, cleaned.
+function leadingLabel(text, lineStart, firstAmountIndex) {
+  const before = text.slice(lineStart, firstAmountIndex);
+  return {
+    label: before.replace(/[\s:.–—-]+$/, '').trim(),
+    labelIndex: lineStart + (before.length - before.trimStart().length),
+  };
+}
+
+function extractAmounts(text) {
+  // First, collect every raw amount with its source line.
+  const raw = [];
+  for (const m of text.matchAll(AMOUNT_RE)) raw.push(amountAt(text, m[0], m.index));
+
+  // Group amounts by the line they sit on. Award-letter tables often list the
+  // same award three times across Fall / Spring / Annual columns, where
+  // Annual = Fall + Spring. When a line's last amount equals the sum of the
+  // others, keep only that Annual figure so the award is counted once, not
+  // two or three times. Other lines pass through unchanged.
+  const byLine = new Map();
+  for (const a of raw) {
+    if (!byLine.has(a.lineStart)) byLine.set(a.lineStart, []);
+    byLine.get(a.lineStart).push(a);
+  }
+
+  const amounts = [];
+  for (const group of byLine.values()) {
+    if (group.length >= 2) {
+      const last = group[group.length - 1];
+      const rest = group.slice(0, -1);
+      const restSum = rest.reduce((t, a) => t + a.value, 0);
+      // Tolerance of $2 absorbs rounding between term and annual figures.
+      if (Math.abs(restSum - last.value) <= 2) {
+        const lead = leadingLabel(text, group[0].lineStart, group[0].index);
+        amounts.push({ ...last, label: lead.label || last.label, labelIndex: lead.label ? lead.labelIndex : last.labelIndex });
+        continue;
+      }
+    }
+    for (const a of group) amounts.push(a);
+  }
+
+  amounts.sort((a, b) => a.index - b.index);
+  return amounts.map(({ lineStart, ...rest }) => rest);
 }
 
 function extractDates(text) {
