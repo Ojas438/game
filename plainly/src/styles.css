@@ -66,6 +66,12 @@ body {
   font-weight: 600;
 }
 
+.input-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
 .link-button {
   background: none;
   border: none;
@@ -76,6 +82,22 @@ body {
   text-decoration: underline;
   white-space: nowrap;
 }
+
+.link-button:disabled { color: var(--muted); cursor: default; }
+
+.ingest-status {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+
+.ingest-error {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+  color: var(--loan);
+}
+
+.ocr-hint { margin: 10px 0 0; }
 
 .award-textarea {
   width: 100%;
