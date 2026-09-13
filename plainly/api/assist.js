@@ -15,10 +15,11 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 
-// Default to the most capable model. This is a small, infrequent call, but if
-// cost matters you can switch to a cheaper model (e.g. "claude-haiku-4-5")
-// here — it's the only line you need to change.
-const MODEL = 'claude-opus-5';
+// Model used for the (optional) suggest/explain features. Haiku is the
+// cheapest current model and is plenty for this small classify/explain task.
+// Swap to "claude-sonnet-5" or "claude-opus-5" here if you want more capability
+// — it's the only line you need to change.
+const MODEL = 'claude-haiku-4-5';
 
 const CATEGORIES = ['GRANT', 'LOAN', 'WORK_STUDY', 'COST', 'UNKNOWN'];
 
