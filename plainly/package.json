@@ -1,0 +1,26 @@
+{
+  "name": "plainly",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Turns a confusing college aid award letter into what a family actually pays.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.125.0",
+    "pdfjs-dist": "^6.3.289",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tesseract.js": "^7.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.0",
+    "vitest": "^2.0.5"
+  }
+}
