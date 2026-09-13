@@ -16,9 +16,18 @@
 import { FEDERAL_LOAN_RATE, REPAYMENT_YEARS } from './constants.js';
 import { CATEGORIES } from '../parser/programs.js';
 
+// A "subtotal" row — e.g. "Total Scholarships & Grants" — restates awards the
+// letter already lists individually. Counting both would double the total, so
+// these are excluded from the category sums. (The cost-of-attendance total is
+// handled separately by findTotalCostLine, which is what we DO want to use.)
+const SUBTOTAL_RE = /\btotals?\b|\bsubtotal\b/i;
+function isSubtotal(item) {
+  return SUBTOTAL_RE.test(item.label || '');
+}
+
 function sumByCategory(items, category) {
   return items
-    .filter((i) => i.category === category)
+    .filter((i) => i.category === category && !isSubtotal(i))
     .reduce((total, i) => total + i.value, 0);
 }
 
@@ -79,7 +88,7 @@ export function honestCost(lineItems = []) {
   const costOfAttendance = totalCostLine
     ? totalCostLine.value
     : lineItems
-        .filter((i) => i.category === CATEGORIES.COST)
+        .filter((i) => i.category === CATEGORIES.COST && !isSubtotal(i))
         .reduce((total, i) => total + i.value, 0);
 
   const gift = sumByCategory(lineItems, CATEGORIES.GRANT); // grants + scholarships

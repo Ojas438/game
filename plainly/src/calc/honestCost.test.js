@@ -41,6 +41,18 @@ describe('honestCost()', () => {
     expect(result.gift + result.loans + result.workStudy).toBe(21500);
   });
 
+  it('ignores subtotal rows so awards are not double-counted with their total', () => {
+    const withSubtotal = [
+      { label: 'Estimated Cost of Attendance', value: 32000, category: 'COST' },
+      { label: 'Federal Pell Grant', value: 5500, category: 'GRANT' },
+      { label: 'Merit Scholarship', value: 8000, category: 'GRANT' },
+      { label: 'Total Scholarships & Grants', value: 13500, category: 'GRANT' },
+    ];
+    const r = honestCost(withSubtotal);
+    expect(r.gift).toBe(13500); // 5500 + 8000, NOT 27000
+    expect(r.familyPays).toBe(18500);
+  });
+
   it('sums cost components when there is no explicit total line', () => {
     const components = [
       { label: 'Tuition', value: 20000, category: 'COST' },

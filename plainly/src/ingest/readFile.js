@@ -11,6 +11,8 @@
 // load when someone actually uploads a file, keeping the initial page light.
 // This module produces text only; it does no parsing or interpretation.
 
+import { groupIntoLines } from './layout.js';
+
 // If a PDF's text layer yields fewer than this many characters, we assume it's
 // a scan and fall back to OCR.
 const MIN_PDF_TEXT = 40;
@@ -51,7 +53,16 @@ async function readPdf(file, onProgress) {
   for (let n = 1; n <= pdf.numPages; n++) {
     const page = await pdf.getPage(n);
     const content = await page.getTextContent();
-    lines.push(...groupIntoLines(content.items));
+    const pageWidth = page.getViewport({ scale: 1 }).width;
+    // Normalize pdf.js's positioned items to { str, x, y, w } for the
+    // column-aware line grouper.
+    const items = content.items.map((it) => ({
+      str: it.str,
+      x: it.transform[4],
+      y: it.transform[5],
+      w: it.width || 0,
+    }));
+    lines.push(...groupIntoLines(items, pageWidth));
     onProgress({ stage: `Reading page ${n} of ${pdf.numPages}`, progress: n / pdf.numPages });
   }
   const text = lines.join('\n').trim();
@@ -71,30 +82,6 @@ async function readPdf(file, onProgress) {
   } finally {
     await worker.terminate();
   }
-}
-
-// pdf.js returns loose text fragments with positions. Group fragments that
-// share (roughly) the same vertical position back into lines, so column
-// layouts like "Pell Grant     $5,500" stay on one line.
-function groupIntoLines(items) {
-  const rows = new Map();
-  for (const item of items) {
-    if (!item.str) continue;
-    const y = Math.round(item.transform[5]);
-    if (!rows.has(y)) rows.set(y, []);
-    rows.get(y).push(item);
-  }
-  return [...rows.entries()]
-    .sort((a, b) => b[0] - a[0]) // top of page first
-    .map(([, frags]) =>
-      frags
-        .sort((a, b) => a.transform[4] - b.transform[4]) // left to right
-        .map((f) => f.str)
-        .join(' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-    )
-    .filter(Boolean);
 }
 
 async function renderPageToCanvas(page, pdfjs) {

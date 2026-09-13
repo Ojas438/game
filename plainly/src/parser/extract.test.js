@@ -116,4 +116,25 @@ describe('classify()', () => {
     expect(classify('').category).toBe('UNKNOWN');
     expect(classify(null).category).toBe('UNKNOWN');
   });
+
+  it('treats borrowing-limit / financing text as UNKNOWN, not free money', () => {
+    // A borrowing LIMIT is not awarded aid, even though the text says "grants".
+    expect(classify('Scholarships and Grants Parents may borrow up to').category).toBe('UNKNOWN');
+    expect(classify('aggregate limit per student').category).toBe('UNKNOWN');
+    expect(classify('Private loans up to $10,000').category).toBe('UNKNOWN');
+  });
+});
+
+describe('extract() — Fall/Spring/Annual columns', () => {
+  it('collapses a Fall + Spring + Annual row to the single Annual figure', () => {
+    const { amounts } = extract('Federal Pell Grant   $3,248   $3,247   $6,495');
+    expect(amounts).toHaveLength(1);
+    expect(amounts[0].value).toBe(6495);
+    expect(amounts[0].label).toBe('Federal Pell Grant');
+  });
+
+  it('does not collapse two unrelated amounts on one line', () => {
+    const { amounts } = extract('Tuition $15,915 Books & Supplies $820');
+    expect(amounts.map((a) => a.value)).toEqual([15915, 820]);
+  });
 });
