@@ -1,9 +1,9 @@
 // ExplainPanel.jsx
-// An optional "explain this in plain language" button. It sends the numbers
-// Plainly ALREADY computed to the AI helper and shows the plain-English
-// explanation it writes back. The AI is told to use only the figures we give
-// it and never to compute anything — the trustworthy numbers stay in the
-// deterministic calculator; this just narrates them.
+// The "simplified" side of the Plain English version card. A button asks the AI
+// helper to describe, in plain language, the numbers the deterministic
+// calculator ALREADY computed — it is told to use only those figures and never
+// to compute anything. Renders as an inner pane (no card of its own); the
+// wrapping PlainEnglish card supplies the heading.
 
 import { useState } from 'react';
 import { explainBreakdown } from '../ai/assist.js';
@@ -27,24 +27,26 @@ export default function ExplainPanel({ cost, academicYear }) {
   }
 
   return (
-    <section className="card explain-panel">
-      <div className="explain-header">
-        <h2>Explain this in plain language</h2>
-        <button
-          className="secondary-button"
-          onClick={handleExplain}
-          disabled={status === 'loading'}
-        >
-          {status === 'loading' ? 'Writing…' : status === 'done' ? 'Rewrite' : 'Explain'}
+    <div className="pe-side">
+      <div className="pe-side-head">
+        <h3>Simplified</h3>
+        <button className="secondary-button" onClick={handleExplain} disabled={status === 'loading'}>
+          {status === 'loading' ? 'Writing…' : status === 'done' ? 'Rewrite' : 'Explain with AI'}
         </button>
       </div>
-      <p className="hint">Optional. Uses AI to describe the numbers above — it does not change them.</p>
+      {status === 'idle' && (
+        <p className="none-found">Tap &ldquo;Explain with AI&rdquo; for a plain-language summary.</p>
+      )}
       {status === 'error' && <p className="ingest-error">{error}</p>}
       {status === 'done' &&
         text
           .split(/\n{2,}/)
           .filter(Boolean)
-          .map((para, i) => <p key={i} className="explain-text">{para}</p>)}
-    </section>
+          .map((para, i) => (
+            <p key={i} className="explain-text">
+              {para}
+            </p>
+          ))}
+    </div>
   );
 }

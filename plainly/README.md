@@ -1,8 +1,8 @@
-# Plainly
+# Aid Helper
 
 Families get college aid award letters that mix loans in with grants under the
 word "award," subtract the loans from the cost, and show a bottom line that
-looks like what you pay. It isn't. **Plainly** takes the pasted text of an award
+looks like what you pay. It isn't. **Aid Helper** takes the pasted text of an award
 letter and shows what a family will actually pay out of pocket — separating
 money you keep from money you must repay.
 
@@ -53,7 +53,7 @@ database.
   suggestion only pre-fills a dropdown; you confirm, and the deterministic
   calculator re-runs.
 - **Explain** the breakdown in plain language. The model is given the numbers
-  Plainly already computed and told to use them verbatim — it never calculates
+  Aid Helper already computed and told to use them verbatim — it never calculates
   anything.
 
 **The AI never touches the numbers.** It labels and it narrates; the math lives
