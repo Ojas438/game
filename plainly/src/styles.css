@@ -1,20 +1,28 @@
-/* styles.css — Aid Helper. A deliberately institutional look: a financial
-   statement / award letter, not a startup landing page. Off-white page, white
-   panels separated by 1px hairline borders (no shadows), square-ish corners,
-   serif headings and dollar figures, a plain sans for body and table rows, one
-   accent color (deep green) used only on the deadline panel, and tabular
-   numerals so every column of money lines up. Committed single (light) look. */
+/* styles.css — Aid Helper. An engraved award-letter / bank-statement look, but
+   warmer and richer than a bare form: parchment paper, a deep-green letterhead,
+   titled header bands on every panel, and restrained semantic color (grants
+   green, loans rust, work-study amber). Serif for headings and dollar figures,
+   a plain sans for body and table rows, tabular numerals so money lines up.
+   Committed single (light) look. */
 
 :root {
-  --paper: #faf9f7;      /* page */
-  --panel: #ffffff;      /* panels */
-  --ink: #1b1a17;        /* near-black, warm */
-  --muted: #6d685f;      /* warm gray text */
-  --faint: #8f897d;      /* lighter labels */
-  --line: #e4e0d8;       /* warm-gray hairline */
-  --line-strong: #cec8bc;
-  --accent: #1f5132;     /* deep green — the ONE accent */
-  --accent-tint: #eef3ee;
+  --paper: #f4efe3;         /* warm parchment page */
+  --paper-2: #efe8d8;       /* slightly deeper band */
+  --panel: #fffdf8;         /* warm white panels */
+  --ink: #211f1a;           /* near-black, warm */
+  --muted: #6a655b;
+  --faint: #8d877a;
+  --line: #e2dac9;          /* warm hairline */
+  --line-strong: #c9bda4;
+  --band: #efe7d5;          /* panel header band */
+  --letterhead: #1c3a29;    /* deep green masthead */
+  --cream: #f4efe3;
+
+  --accent: #1f5132;        /* deep green — deadlines / primary */
+  --grant: #1f6b43;   --grant-soft: #e7f0e7;
+  --loan: #9a3b2b;    --loan-soft: #f6e7e1;
+  --earn: #8a5a10;    --earn-soft: #f6ecd5;
+
   --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
   --sans: "Libre Franklin", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
 }
@@ -34,45 +42,62 @@ body {
 .app {
   max-width: 1280px; /* max-w-7xl */
   margin: 0 auto;
-  padding: 40px 24px 72px; /* px-6 side gutter */
+  padding: 32px 24px 72px; /* px-6 side gutter */
 }
 
-/* ---- Masthead (left-aligned, not a centered hero) ---- */
+/* ---- Letterhead masthead (left-aligned, not a centered hero) ---- */
 .app-header {
-  border-bottom: 2px solid var(--ink);
-  padding-bottom: 16px;
-  margin-bottom: 24px;
+  background: var(--letterhead);
+  color: var(--cream);
+  border: 1px solid #14291d;
+  border-radius: 3px;
+  padding: 22px 26px;
+  margin-bottom: 22px;
+  /* engraved double-rule at the foot of the letterhead */
+  box-shadow: inset 0 -5px 0 rgba(244, 239, 227, 0.14), inset 0 -6px 0 var(--letterhead);
+}
+.masthead-kicker {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: #a9c6b2;
 }
 .app-header h1 {
   font-family: var(--serif);
   font-weight: 700;
-  font-size: 2.1rem;
+  font-size: 2.3rem;
   letter-spacing: -0.01em;
   margin: 0;
+  color: #fbf8f0;
 }
 .tagline {
-  color: var(--muted);
+  color: #cfe0d3;
   margin: 8px 0 0;
   font-size: 1rem;
-  max-width: 68ch;
+  max-width: 70ch;
 }
 
 /* ---- Panels ---- */
 .card {
   background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 2px; /* rounded-sm */
-  padding: 18px 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  padding: 0 20px 18px;
   margin-bottom: 16px;
 }
+/* Titled header band on every panel — ledger-section feel. */
 .card > h2 {
   font-family: var(--serif);
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 1.18rem;
   letter-spacing: -0.005em;
-  margin: 0 0 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--line);
+  margin: 0 -20px 14px;
+  padding: 11px 20px;
+  background: var(--band);
+  border-bottom: 2px solid var(--line-strong);
+  border-radius: 3px 3px 0 0;
 }
 .card > h3 { font-family: var(--sans); }
 
@@ -89,31 +114,31 @@ body {
 }
 
 /* ---- Input ---- */
-.input-card { margin-bottom: 22px; }
+.input-card { margin-bottom: 22px; padding-top: 18px; }
 .input-header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   flex-wrap: wrap;
 }
 .input-label {
   font-family: var(--serif);
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.12rem;
 }
 .input-actions { display: flex; gap: 16px; flex-wrap: wrap; }
 .link-button {
   background: none;
   border: none;
-  color: var(--ink);
+  color: var(--accent);
   font: inherit;
   font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
   padding: 0;
   text-decoration: underline;
-  text-decoration-color: var(--line-strong);
   text-underline-offset: 2px;
   white-space: nowrap;
 }
@@ -124,7 +149,7 @@ body {
   border: 1px solid var(--line-strong);
   border-radius: 2px;
   padding: 12px 14px;
-  background: var(--panel);
+  background: #fffefb;
   color: var(--ink);
   font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   font-size: 0.88rem;
@@ -135,30 +160,33 @@ body {
 
 .primary-button {
   margin-top: 14px;
-  background: var(--ink);
-  color: var(--paper);
-  border: none;
+  background: var(--accent);
+  color: var(--cream);
+  border: 1px solid #163d25;
   border-radius: 2px;
-  padding: 11px 22px;
+  padding: 11px 24px;
   font: 600 0.98rem var(--sans);
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   cursor: pointer;
 }
 .primary-button:disabled { opacity: 0.45; cursor: not-allowed; }
-.primary-button:not(:disabled):hover { background: #000; }
+.primary-button:not(:disabled):hover { background: #1a4429; }
 
 .ingest-status { margin: 0 0 10px; font-size: 0.88rem; color: var(--accent); }
-.ingest-error { margin: 0 0 10px; font-size: 0.88rem; color: #a3341f; }
+.ingest-error { margin: 0 0 10px; font-size: 0.88rem; color: var(--loan); }
 .ocr-hint { margin: 10px 0 0; }
 .hint { color: var(--muted); font-size: 0.9rem; }
 .none-found { color: var(--faint); font-style: italic; margin: 6px 0 0; }
 
 .academic-year {
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
+  font-weight: 600;
   margin: 0 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
 }
 
 /* ---- Results grid: two columns >=1024px, single column below ---- */
@@ -180,7 +208,7 @@ body {
   justify-content: space-between;
   align-items: baseline;
   gap: 16px;
-  padding: 5px 0;
+  padding: 6px 0;
   border-top: 1px solid var(--line);
 }
 .rows .row:first-child { border-top: none; }
@@ -191,22 +219,33 @@ body {
   text-align: right;
   white-space: nowrap;
   color: var(--ink);
+  font-weight: 500;
 }
 .rows-subhead { margin: 16px 0 4px; }
 
-/* Bold totals get the serif treatment — the "big dollar figure". */
-.row-total { border-top: 1px solid var(--ink); margin-top: 2px; padding-top: 8px; }
-.row-total .row-label { font-weight: 600; }
-.row-total .row-num { font-family: var(--serif); font-weight: 700; font-size: 1.5rem; line-height: 1; }
+/* Semantic color on the money rows */
+.row-good .row-num { color: var(--grant); }
+.row-loan .row-num { color: var(--loan); }
+.row-work .row-num { color: var(--earn); }
+.row-cash .row-num { color: var(--ink); }
 
-/* ---- Deadlines panel: the ONE place the accent is used ---- */
-.action-panel {
-  border-left: 4px solid var(--accent);
+/* Bold totals get the serif treatment — the "big dollar figure" — on a band. */
+.row-total {
+  border-top: 2px solid var(--ink);
+  margin: 4px -12px 0;
+  padding: 10px 12px 4px;
+  background: var(--band);
+  border-radius: 0 0 2px 2px;
 }
-.action-panel > h2 { color: var(--accent); font-size: 1.35rem; }
+.row-total .row-label { font-weight: 700; }
+.row-total .row-num { font-family: var(--serif); font-weight: 700; font-size: 1.55rem; line-height: 1; }
+
+/* ---- Deadlines panel: green accent, most prominent ---- */
+.action-panel { border-left: 5px solid var(--accent); }
+.action-panel > h2 { background: var(--grant-soft); color: var(--accent); border-bottom-color: var(--accent); }
 .deadlines { list-style: none; margin: 0; padding: 0; }
 .deadlines li {
-  padding: 12px 0;
+  padding: 13px 0;
   border-top: 1px solid var(--line);
   display: flex;
   flex-direction: column;
@@ -217,21 +256,30 @@ body {
   font-family: var(--serif);
   font-weight: 700;
   color: var(--accent);
-  font-size: 1.75rem;      /* largest type on the page */
+  font-size: 1.85rem;      /* largest type on the page */
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
 .deadline-context { color: var(--muted); }
 
-/* ---- Grants vs loans: two neutral columns, each with a total ---- */
+/* ---- Grants vs loans: two tinted columns, each with a total ---- */
 .gvl-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.gvl-col { border: 1px solid var(--line); border-radius: 2px; padding: 12px 14px; }
-.gvl-col-head { margin-bottom: 6px; }
-.gvl-col-title { display: block; font-family: var(--serif); font-weight: 600; font-size: 1.02rem; }
+.gvl-col { border: 1px solid var(--line-strong); border-radius: 3px; padding: 12px 14px; }
+.gvl-grant { background: var(--grant-soft); border-color: #cfe0cf; }
+.gvl-loan { background: var(--loan-soft); border-color: #e6cfc7; }
+.gvl-col-head { margin-bottom: 8px; }
+.gvl-col-title { display: block; font-family: var(--serif); font-weight: 700; font-size: 1.05rem; }
+.gvl-grant .gvl-col-title { color: var(--grant); }
+.gvl-loan .gvl-col-title { color: var(--loan); }
 .gvl-col-note { display: block; margin-top: 2px; }
-.gvl-col .row-total .row-num { font-size: 1.15rem; }
+.gvl-col .rows .row { border-top-color: rgba(0,0,0,0.06); }
+.gvl-col .row-total { background: transparent; border-top: 2px solid currentColor; margin: 6px 0 0; padding: 6px 0 0; }
+.gvl-grant .row-total { color: var(--grant); }
+.gvl-loan .row-total { color: var(--loan); }
+.gvl-col .row-total .row-label { color: inherit; }
+.gvl-col .row-total .row-num { color: inherit; font-size: 1.2rem; }
 
-.gvl-review { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--line); }
+.gvl-review { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--line-strong); }
 .gvl-review-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .gvl-review-head h3 { margin: 0; font-size: 0.92rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
 .review-list { list-style: none; margin: 8px 0 0; padding: 0; }
@@ -246,7 +294,7 @@ body {
   padding: 5px 8px;
   border: 1px solid var(--line-strong);
   border-radius: 2px;
-  background: var(--panel);
+  background: #fffefb;
   color: var(--ink);
 }
 .ai-reason { margin: 5px 0 0; font-size: 0.82rem; color: var(--muted); font-style: italic; }
@@ -261,7 +309,7 @@ body {
   border-top: 1px solid var(--line);
 }
 .terms-list .term-row:first-child { border-top: none; }
-.term-name { font-weight: 600; }
+.term-name { font-weight: 700; font-family: var(--serif); }
 .term-def { color: var(--muted); }
 
 /* ---- Plain English version: simplified | original ---- */
@@ -277,9 +325,9 @@ body {
 .pe-legend { margin: 0 0 8px; }
 .explain-text { margin: 0 0 10px; }
 .secondary-button {
-  background: var(--panel);
-  color: var(--ink);
-  border: 1px solid var(--line-strong);
+  background: #fffefb;
+  color: var(--accent);
+  border: 1px solid var(--accent);
   border-radius: 2px;
   padding: 6px 14px;
   font: 600 0.9rem var(--sans);
@@ -293,30 +341,30 @@ body {
   word-break: break-word;
   font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   font-size: 0.82rem;
-  line-height: 1.8;
-  background: var(--paper);
+  line-height: 1.85;
+  background: #fffefb;
   border: 1px solid var(--line);
   border-radius: 2px;
   padding: 14px;
   margin: 0;
   overflow-x: auto;
 }
-/* Neutral marks — amounts underlined, deadline dates in the accent. No fills. */
+/* Colored underlines by category; deadline dates highlighted. */
 mark { background: transparent; color: inherit; font-weight: 600; }
-mark.mark-grant,
-mark.mark-loan,
-mark.mark-work_study,
-mark.mark-cost { border-bottom: 1px solid var(--line-strong); }
+mark.mark-grant { color: var(--grant); border-bottom: 2px solid var(--grant); }
+mark.mark-loan { color: var(--loan); border-bottom: 2px solid var(--loan); }
+mark.mark-work_study { color: var(--earn); border-bottom: 2px solid var(--earn); }
+mark.mark-cost { color: var(--muted); border-bottom: 1px solid var(--line-strong); }
 mark.mark-unknown { border-bottom: 1px dotted var(--muted); }
 mark.mark-date { font-weight: 400; }
-mark.mark-deadline { color: var(--accent); border-bottom: 2px solid var(--accent); font-weight: 700; }
+mark.mark-deadline { background: var(--grant-soft); color: var(--accent); font-weight: 700; padding: 0 3px; }
 
 .app-footer {
-  color: var(--faint);
+  color: var(--muted);
   font-size: 0.8rem;
-  margin-top: 26px;
+  margin-top: 28px;
   padding-top: 14px;
-  border-top: 1px solid var(--line);
+  border-top: 3px double var(--line-strong);
   line-height: 1.6;
 }
 
@@ -324,8 +372,7 @@ mark.mark-deadline { color: var(--accent); border-bottom: 2px solid var(--accent
   .gvl-cols { grid-template-columns: 1fr; }
 }
 @media (max-width: 520px) {
-  .app-header h1 { font-size: 1.7rem; }
-  .action-panel > h2 { font-size: 1.15rem; }
-  .deadline-date { font-size: 1.4rem; }
-  .row-total .row-num { font-size: 1.25rem; }
+  .app-header h1 { font-size: 1.85rem; }
+  .deadline-date { font-size: 1.45rem; }
+  .row-total .row-num { font-size: 1.3rem; }
 }

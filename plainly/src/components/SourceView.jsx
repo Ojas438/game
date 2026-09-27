@@ -16,7 +16,7 @@ export default function SourceView({ text, analysis }) {
         <h3>Original letter</h3>
       </div>
       <p className="pe-legend">
-        Dollar amounts are underlined; deadline dates are marked in green.
+        Grants green · loans rust · work-study amber · costs gray · deadline dates highlighted.
       </p>
       <pre className="source-text">
         {segments.map((seg, i) => {
