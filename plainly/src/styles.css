@@ -45,36 +45,26 @@ body {
   padding: 32px 24px 72px; /* px-6 side gutter */
 }
 
-/* ---- Letterhead masthead (left-aligned, not a centered hero) ---- */
+/* ---- Masthead: the logo on the paper, left-aligned (not a centered hero) ---- */
 .app-header {
-  background: var(--letterhead);
-  color: var(--cream);
-  border: 1px solid #14291d;
-  border-radius: 3px;
-  padding: 22px 26px;
   margin-bottom: 22px;
-  /* engraved double-rule at the foot of the letterhead */
-  box-shadow: inset 0 -5px 0 rgba(244, 239, 227, 0.14), inset 0 -6px 0 var(--letterhead);
+  padding-bottom: 16px;
+  border-bottom: 3px double var(--line-strong);
 }
-.masthead-kicker {
-  margin: 0 0 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  font-size: 0.66rem;
-  font-weight: 600;
-  color: #a9c6b2;
-}
-.app-header h1 {
-  font-family: var(--serif);
-  font-weight: 700;
-  font-size: 2.3rem;
-  letter-spacing: -0.01em;
+.app-header-logo {
   margin: 0;
-  color: #fbf8f0;
+  line-height: 0;
+}
+.app-header-logo img {
+  display: block;
+  height: 104px;
+  width: auto;
+  max-width: 100%;
+  margin-left: -8px; /* optical: the logo has interior padding */
 }
 .tagline {
-  color: #cfe0d3;
-  margin: 8px 0 0;
+  color: var(--muted);
+  margin: 12px 0 0;
   font-size: 1rem;
   max-width: 70ch;
 }
