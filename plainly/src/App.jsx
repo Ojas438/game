@@ -42,8 +42,9 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <p className="masthead-kicker">Financial Aid · Plain-Language Statement</p>
-        <h1>Aid Helper</h1>
+        <h1 className="app-header-logo">
+          <img src="/logo.png" alt="Aid Helper" />
+        </h1>
         <p className="tagline">
           Award letters mix loans in with grants and call it all &ldquo;aid.&rdquo; Paste
           yours to see what you actually pay.
