@@ -1,0 +1,9 @@
+trial,inputs,accuracy_%,accuracy_95%_range,who_scores_accuracy_%,log_loss,log_loss_95%_range,calibration_error_%
+1. Baseline: always guess most common,none,28.0827,26.4-29.8,63.3379,1.8974,1.877-1.918,1.9749
+Baseline 2: only which team has ball,home/away,28.0827,26.4-29.8,63.3379,1.8969,1.876-1.917,1.9751
+2. Field position only,yard line,28.1124,26.5-29.7,61.6176,1.8266,1.805-1.848,2.6273
+3. Field position + down + distance,"yard line, down, distance",28.2333,27.1-29.3,63.2886,1.8052,1.783-1.828,1.9858
+4. Everything (logistic regression),all 10 inputs,35.4946,34.3-36.7,67.0945,1.6536,1.627-1.677,1.7721
+5. Everything (XGBoost),all 10 inputs,38.1973,37.1-39.4,68.9604,1.5786,1.553-1.604,1.2402
+"Bonus: XGBoost, field position only",yard line,29.0626,27.6-30.5,61.4671,1.8153,1.793-1.837,1.5849
+"Bonus: XGBoost, field position + down + distance","yard line, down, distance",29.8598,28.6-31.0,62.2470,1.7869,1.764-1.809,1.1225

@@ -1,0 +1,6 @@
+# Big files that the scripts can re-create
+data/
+results/*.npy
+results/*.parquet
+results/xgb_model.json
+__pycache__/

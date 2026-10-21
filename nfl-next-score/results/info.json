@@ -1,0 +1,42 @@
+{
+  "classes": [
+    "Ball team: Passing TD",
+    "Ball team: Rushing TD",
+    "Ball team: Field Goal",
+    "Ball team: Safety",
+    "Ball team: Return TD",
+    "Other team: Passing TD",
+    "Other team: Rushing TD",
+    "Other team: Field Goal",
+    "Other team: Safety",
+    "Other team: Return TD",
+    "No Score"
+  ],
+  "features": [
+    "yardline_100",
+    "down",
+    "ydstogo",
+    "score_differential",
+    "half_seconds_remaining",
+    "game_seconds_remaining",
+    "qtr",
+    "posteam_timeouts_remaining",
+    "defteam_timeouts_remaining",
+    "is_home"
+  ],
+  "trials": {
+    "t1": "1. Baseline: always guess most common",
+    "b2": "Baseline 2: only which team has ball",
+    "t2": "2. Field position only",
+    "t3": "3. Field position + down + distance",
+    "t4": "4. Everything (logistic regression)",
+    "t5": "5. Everything (XGBoost)",
+    "x2": "Bonus: XGBoost, field position only",
+    "x3": "Bonus: XGBoost, field position + down + distance"
+  },
+  "test_games": 285,
+  "train_plays": 284282,
+  "test_plays": 40516,
+  "xgb_beats_logistic_in_%_of_remixes": 100.0,
+  "most_common_answer": "Ball team: Field Goal"
+}
