@@ -32,7 +32,7 @@ export default async function handler(req, res) {
   }
 
   const body = typeof req.body === 'string' ? safeParse(req.body) : req.body || {};
-  const client = new Anthropic();
+  const client = new Anthropic({ apiKey: cleanKey(process.env.ANTHROPIC_API_KEY) });
 
   try {
     if (body.action === 'suggest') {
@@ -118,6 +118,16 @@ async function explain(client, summary, academicYear) {
 
   const explanation = response.content.find((b) => b.type === 'text')?.text ?? '';
   return { explanation };
+}
+
+// Be forgiving about how the API key was pasted into the environment variable.
+// If someone copies the whole example `curl` command (which includes the key),
+// or leaves quotes/whitespace/newlines around it, pull out just the token so a
+// messy paste produces a clean auth error instead of crashing the function.
+function cleanKey(raw) {
+  if (!raw) return '';
+  const match = String(raw).match(/sk-ant-[A-Za-z0-9_-]+/);
+  return (match ? match[0] : String(raw)).trim();
 }
 
 function num(v) {
