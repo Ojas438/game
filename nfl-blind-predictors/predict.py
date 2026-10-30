@@ -1,14 +1,18 @@
-"""Run all 100 blind predictors on one NFL game.
+"""Ask all 100 predictors about one upcoming NFL game.
+
+Each predictor learns from the N most recent finished games (the same
+amounts as in experiment.py), then picks a winner.
 
 Usage:
     python predict.py HOME_TEAM AWAY_TEAM
-    python predict.py Chiefs Bills
+    python predict.py KC BUF
 """
 
 import sys
 from collections import Counter
 
-from predictors import build_predictors
+from experiment import load_games
+from predictors import build_predictors, game_counts, team_name
 
 
 def main(argv):
@@ -16,27 +20,23 @@ def main(argv):
         print(__doc__.strip())
         return 1
 
-    home_team, away_team = argv[1], argv[2]
-    predictors = build_predictors()
-    picks = [p.predict(home_team, away_team) for p in predictors]
+    home, away = team_name(argv[1].upper()), team_name(argv[2].upper())
+    games = load_games()
+    if home not in {g["home"] for g in games} or away not in {g["home"] for g in games}:
+        print("Use team abbreviations like KC, BUF, PHI, SF, NYG.")
+        return 1
 
-    print(f"{away_team} at {home_team}: {len(picks)} predictors, no data\n")
-    for pick in picks:
-        print(
-            f"  #{pick['predictor']:>3}  {pick['winner']} {pick['score']}"
-            f"  ({pick['confidence']:.0%} sure)"
-        )
+    counts = game_counts(len(games))
+    votes = Counter()
+    print(f"{away} at {home}\n")
+    for predictor, n in zip(build_predictors(len(counts)), counts):
+        predictor.train(games[len(games) - n:] if n else [])
+        pick = predictor.predict(home, away)
+        votes[pick] += 1
+        margin = abs(predictor.predicted_margin(home, away))
+        print(f"  #{predictor.predictor_id:>3}  {n:>5} games  ->  {pick} by {margin:.1f}")
 
-    votes = Counter(pick["winner"] for pick in picks)
-    print("\nVotes:")
-    for team in (home_team, away_team):
-        print(f"  {team}: {votes[team]}")
-
-    leader, leader_votes = votes.most_common(1)[0]
-    if leader_votes * 2 == len(picks):
-        print("\nConsensus: dead even tie")
-    else:
-        print(f"\nConsensus: {leader} ({leader_votes}/{len(picks)})")
+    print(f"\nVotes: {home} {votes[home]}, {away} {votes[away]}")
     return 0
 
 

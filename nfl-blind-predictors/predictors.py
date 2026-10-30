@@ -1,38 +1,96 @@
-"""100 identical NFL game predictors that are given no data.
+"""100 identical NFL game predictors.
 
-Every predictor runs the exact same code. None of them sees standings,
-records, injuries, odds, or past results. The only thing a predictor is
-told is which two teams are playing, and it has to pick a winner anyway.
+Every predictor runs the exact same code. The only thing that can differ
+between them is how many past games they are allowed to learn from.
+
+How a predictor learns: it gives every team a strength rating, plus one
+home-field bonus, and adjusts them until "home rating + home bonus - away
+rating" matches the real score margins of the games it was shown as closely
+as possible. To predict a game it picks whichever side that formula favors.
+A predictor shown zero games has every rating at 0, so it can only guess.
 """
 
 import random
 
 NUM_PREDICTORS = 100
 
+# Teams that moved cities count as the same team.
+RENAMED_TEAMS = {"OAK": "LV", "SD": "LAC", "STL": "LA"}
 
-class BlindPredictor:
-    """Picks NFL winners with zero information about the teams."""
+# How strongly ratings are pulled toward 0 when a team has few games.
+# It acts like every team already played this many perfectly average games.
+PRIOR_GAMES = 3.0
+TRAINING_PASSES = 30
 
-    def __init__(self, predictor_id):
+
+def team_name(code):
+    return RENAMED_TEAMS.get(code, code)
+
+
+class Predictor:
+    def __init__(self, predictor_id, seed=0):
         self.predictor_id = predictor_id
-        # Each predictor gets its own random number generator, seeded from the
-        # operating system. That is the only thing that differs between them.
-        self._rng = random.Random()
+        self.ratings = {}
+        self.home_bonus = 0.0
+        self.games_seen = 0
+        # Breaks exact ties (always the case with no data) by a coin flip.
+        self._rng = random.Random(seed * 1000 + predictor_id)
 
-    def predict(self, home_team, away_team):
-        """Return a pick for one game: winner, final score, and confidence."""
-        winner = self._rng.choice([home_team, away_team])
-        loser = away_team if winner == home_team else home_team
-        winning_score = self._rng.randint(10, 41)
-        losing_score = self._rng.randint(3, winning_score - 1)
-        return {
-            "predictor": self.predictor_id,
-            "winner": winner,
-            "loser": loser,
-            "score": f"{winning_score}-{losing_score}",
-            "confidence": round(self._rng.uniform(0.5, 1.0), 2),
-        }
+    def train(self, games):
+        """Learn team ratings from a list of finished games."""
+        self.games_seen = len(games)
+        self.ratings = {}
+        self.home_bonus = 0.0
+        games_by_team = {}
+        for game in games:
+            games_by_team.setdefault(game["home"], []).append(game)
+            games_by_team.setdefault(game["away"], []).append(game)
+            self.ratings.setdefault(game["home"], 0.0)
+            self.ratings.setdefault(game["away"], 0.0)
+        home_games = [g for g in games if not g["neutral"]]
+
+        for _ in range(TRAINING_PASSES):
+            for team, team_games in games_by_team.items():
+                total = 0.0
+                for g in team_games:
+                    bonus = 0.0 if g["neutral"] else self.home_bonus
+                    if g["home"] == team:
+                        total += g["margin"] - bonus + self.ratings[g["away"]]
+                    else:
+                        total += -g["margin"] + bonus + self.ratings[g["home"]]
+                self.ratings[team] = total / (len(team_games) + PRIOR_GAMES)
+            total = sum(
+                g["margin"] - self.ratings[g["home"]] + self.ratings[g["away"]]
+                for g in home_games
+            )
+            self.home_bonus = total / (len(home_games) + PRIOR_GAMES)
+
+    def predicted_margin(self, home, away, neutral=False):
+        bonus = 0.0 if neutral else self.home_bonus
+        return self.ratings.get(home, 0.0) + bonus - self.ratings.get(away, 0.0)
+
+    def predict(self, home, away, neutral=False):
+        """Return the team this predictor thinks will win."""
+        margin = self.predicted_margin(home, away, neutral)
+        if margin == 0:
+            return self._rng.choice([home, away])
+        return home if margin > 0 else away
 
 
-def build_predictors(count=NUM_PREDICTORS):
-    return [BlindPredictor(i + 1) for i in range(count)]
+def build_predictors(count=NUM_PREDICTORS, seed=0):
+    return [Predictor(i + 1, seed) for i in range(count)]
+
+
+def game_counts(max_games, count=NUM_PREDICTORS):
+    """How many games each predictor gets: 0 for the first, max_games for the last.
+
+    The counts grow by roughly the same percentage each step (1, 2, 3, 4, 5,
+    6, 7, 8, 9, 10, 11, 13, 14 ... thousands), so there are lots of
+    predictors in the small range where each extra game matters most.
+    """
+    counts = [0]
+    for i in range(1, count):
+        target = round(max_games ** ((i - 1) / (count - 2)))
+        counts.append(max(target, counts[-1] + 1))
+    counts[-1] = max_games
+    return counts
