@@ -122,6 +122,11 @@ select {
 .cell.a { background: var(--away); }
 .cell.selected { outline: 2px solid var(--ink); outline-offset: 1px; }
 .grid-caption { font-size: 13px; color: var(--muted); }
+.team-info { overflow-x: auto; }
+.team-info table { border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+.team-info th, .team-info td { padding: 3px 12px 3px 0; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.team-info th:first-child { text-align: left; }
+.team-info thead th { font-size: 12px; font-weight: 600; color: var(--muted); }
 .detail { font-size: 14px; min-height: 1.5em; font-variant-numeric: tabular-nums; }
 </style>
 
@@ -130,6 +135,7 @@ select {
     <div class="yardline" aria-hidden="true"></div>
     <h1>Same Algorithm, More Data</h1>
     <p class="lede">100 copies of one NFL prediction algorithm. Predictor 1 learns from 0 games, predictor 100 learns from <span id="all-games"></span> games, and the rest learn from amounts in between. Here is what each one picks.</p>
+    <p class="muted">Every predictor looks at the same four things about both teams: this season's record, the average point margin over its last 3 games, how high it picked in this year's draft (a higher number means more high picks), and players gained minus players lost in trades this year. From the games it learns from, it works out how much each one matters. The trade list only goes up to April 2026, so trades made since then are not counted.</p>
     <p class="muted">Each predictor learns from the most recent finished games. Change a matchup, remove it, or add your own. Tap a square to see that predictor's pick.</p>
   </header>
 
@@ -166,13 +172,22 @@ class Predictor {
     this.id = id;
     this.ratings = new Map();
     this.homeBonus = 0;
+    this.weights = FEATURES.map(() => 0);
     this.random = makeRandom(seed * 1000 + id);
   }
 
-  // Learn team ratings from a list of finished games.
+  // The part of the predicted margin that comes from record, trend, draft and trades.
+  extras(features) {
+    let total = 0;
+    for (let k = 0; k < this.weights.length; k++) total += this.weights[k] * features[k];
+    return total;
+  }
+
+  // Learn from a list of finished games.
   train(games) {
     this.ratings = new Map();
     this.homeBonus = 0;
+    this.weights = FEATURES.map(() => 0);
     const gamesByTeam = new Map();
     for (const g of games) {
       for (const team of [g.home, g.away]) {
@@ -183,33 +198,52 @@ class Predictor {
       gamesByTeam.get(g.away).push(g);
     }
     const homeGames = games.filter(g => !g.neutral);
+    const weightPrior = FEATURES.map((_, k) =>
+      games.length ? (PRIOR_GAMES * games.reduce((s, g) => s + g.features[k] ** 2, 0)) / games.length : 0
+    );
 
     for (let pass = 0; pass < TRAINING_PASSES; pass++) {
       for (const [team, teamGames] of gamesByTeam) {
         let total = 0;
         for (const g of teamGames) {
           const bonus = g.neutral ? 0 : this.homeBonus;
-          if (g.home === team) total += g.margin - bonus + this.ratings.get(g.away);
-          else total += -g.margin + bonus + this.ratings.get(g.home);
+          const rest = g.margin - bonus - this.extras(g.features);
+          if (g.home === team) total += rest + this.ratings.get(g.away);
+          else total += -rest + this.ratings.get(g.home);
         }
         this.ratings.set(team, total / (teamGames.length + PRIOR_GAMES));
       }
+
       let total = 0;
       for (const g of homeGames) {
-        total += g.margin - this.ratings.get(g.home) + this.ratings.get(g.away);
+        total += g.margin - this.ratings.get(g.home) + this.ratings.get(g.away) - this.extras(g.features);
       }
       this.homeBonus = total / (homeGames.length + PRIOR_GAMES);
+
+      for (let k = 0; k < FEATURES.length; k++) {
+        let top = 0, bottom = 0;
+        for (const g of games) {
+          const x = g.features[k];
+          if (x === 0) continue;
+          const bonus = g.neutral ? 0 : this.homeBonus;
+          const others = this.extras(g.features) - this.weights[k] * x;
+          const rest = g.margin - this.ratings.get(g.home) + this.ratings.get(g.away) - bonus - others;
+          top += x * rest;
+          bottom += x * x;
+        }
+        if (bottom) this.weights[k] = top / (bottom + weightPrior[k]);
+      }
     }
   }
 
-  predictedMargin(home, away, neutral = false) {
+  predictedMargin(home, away, features, neutral = false) {
     const bonus = neutral ? 0 : this.homeBonus;
-    return (this.ratings.get(home) || 0) + bonus - (this.ratings.get(away) || 0);
+    return (this.ratings.get(home) || 0) - (this.ratings.get(away) || 0) + bonus + this.extras(features);
   }
 
   // Return the team this predictor thinks will win.
-  predict(home, away, neutral = false) {
-    const margin = this.predictedMargin(home, away, neutral);
+  predict(home, away, features, neutral = false) {
+    const margin = this.predictedMargin(home, away, features, neutral);
     if (margin === 0) return this.random() < 0.5 ? home : away;
     return margin > 0 ? home : away;
   }
@@ -231,8 +265,11 @@ function gameCounts(maxGames, count = 100) {
 const fmt = n => n.toLocaleString("en-US");
 
 const GAMES = GAME_ROWS.split(";").map(row => {
-  const [home, away, margin, neutral] = row.split(",");
-  return { home: TEAMS[+home], away: TEAMS[+away], margin: +margin, neutral: neutral === "1" };
+  const [home, away, margin, neutral, ...features] = row.split(",");
+  return {
+    home: TEAMS[+home], away: TEAMS[+away], margin: +margin,
+    neutral: neutral === "1", features: features.map(Number),
+  };
 });
 const COUNTS = gameCounts(GAMES.length);
 const PREDICTORS = COUNTS.map((n, i) => {
@@ -240,7 +277,7 @@ const PREDICTORS = COUNTS.map((n, i) => {
   p.train(n ? GAMES.slice(GAMES.length - n) : []);
   return p;
 });
-const CURRENT_TEAMS = [...new Set(GAMES.slice(-300).flatMap(g => [g.home, g.away]))].sort();
+const CURRENT_TEAMS = Object.keys(CURRENT).sort();
 
 document.getElementById("all-games").textContent = fmt(GAMES.length);
 
@@ -253,20 +290,28 @@ function dateLabel(iso) {
   return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 }
 
-function picksFor(home, away) {
+function picksFor(home, away, neutral) {
+  const features = FEATURES.map(k => CURRENT[home][k] - CURRENT[away][k]);
   return PREDICTORS.map((p, i) => ({
     predictor: i + 1,
     games: COUNTS[i],
-    pick: p.predict(home, away),
-    margin: Math.abs(p.predictedMargin(home, away)),
+    pick: p.predict(home, away, features, neutral),
+    margin: Math.abs(p.predictedMargin(home, away, features, neutral)),
   }));
+}
+
+const signed = (x, digits) => (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toFixed(digits);
+
+function teamRow(team, side) {
+  const t = CURRENT[team];
+  return `<tr><th scope="row">${team} <span class="muted">${side}</span></th><td>${t.wins_losses}</td><td>${signed(t.trend, 1)}</td><td>${t.draft.toFixed(2)}</td><td>${signed(t.trades, 0)}</td></tr>`;
 }
 
 function teamOptions(selected) {
   return CURRENT_TEAMS.map(t => `<option value="${t}"${t === selected ? " selected" : ""}>${t}</option>`).join("");
 }
 
-function addGame(home, away, date) {
+function addGame(home, away, date, neutral = false) {
   const id = nextId++;
   const card = document.createElement("article");
   card.className = "game";
@@ -275,14 +320,19 @@ function addGame(home, away, date) {
       <label for="away-${id}">Away <select id="away-${id}">${teamOptions(away)}</select></label>
       <span class="at">at</span>
       <label for="home-${id}">Home <select id="home-${id}">${teamOptions(home)}</select></label>
-      <span class="date">${dateLabel(date)}</span>
+      <span class="date">${[dateLabel(date), neutral ? "Neutral site" : ""].filter(Boolean).join(" · ")}</span>
       <span class="spacer"></span>
       <button type="button" class="quiet remove">Remove</button>
     </div>
+    <div class="team-info"><table>
+      <thead><tr><th></th><th>Record</th><th>Last 3</th><th>Draft</th><th>Trades</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
     <div class="vote"></div>
     <div class="grid" role="group" aria-label="The 100 predictors' picks"></div>
     <div class="grid-caption">Predictor 1 (0 games) is top left. Predictor 100 (${fmt(GAMES.length)} games) is bottom right.</div>
     <div class="detail" aria-live="polite"></div>`;
+  card.neutral = neutral;
   gamesEl.appendChild(card);
   const homeSel = card.querySelector(`#home-${id}`);
   const awaySel = card.querySelector(`#away-${id}`);
@@ -302,10 +352,12 @@ function renderGame(card) {
   if (home === away) {
     vote.innerHTML = `<span class="muted">Pick two different teams.</span>`;
     grid.innerHTML = "";
+    card.querySelector(".team-info tbody").innerHTML = "";
     card.picks = null;
     return;
   }
-  const picks = picksFor(home, away);
+  card.querySelector(".team-info tbody").innerHTML = teamRow(away, "away") + teamRow(home, "home");
+  const picks = picksFor(home, away, card.neutral);
   card.picks = { home, away, picks };
   const homeVotes = picks.filter(p => p.pick === home).length;
   const awayVotes = 100 - homeVotes;
@@ -355,6 +407,6 @@ document.getElementById("copy-picks").addEventListener("click", () => {
   }
 });
 
-if (UPCOMING.length) UPCOMING.forEach(([date, home, away]) => addGame(home, away, date));
+if (UPCOMING.length) UPCOMING.forEach(([date, home, away, neutral]) => addGame(home, away, date, neutral === 1));
 else addGame("KC", "BUF", "");
 </script>

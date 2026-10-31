@@ -13,8 +13,17 @@ difference is how many past NFL games each one is allowed to learn from:
   119, 142 ... 1,000 ... 5,000), with more predictors at the small end,
   where each extra game should matter most.
 
-Each predictor gives every team a strength rating plus a home-field bonus,
-fitted to the score margins of the games it was shown, then picks winners.
+Before every game, each predictor looks at four things about both teams,
+using only what was known before kickoff:
+
+- **Record:** this season's win-loss record so far.
+- **Trend:** average point margin over the team's last 3 games.
+- **Draft:** how high the team picked in this year's draft.
+- **Trades:** players gained minus players given away in trades this year.
+
+It also gives every team a strength rating and adds a home-field bonus. From
+the games it was shown, it learns the ratings, the bonus, and how much each of
+the four things matters, then picks winners.
 
 ## The test
 
@@ -55,28 +64,33 @@ python website/build.py
 | Predictor | Games learned from | Accuracy |
 | --- | --- | --- |
 | 1 | 0 | 50.4% |
-| 11 | 10 | 55.3% |
-| 50 | 70 | 57.1% |
-| 60 | 170 | 60.7% |
-| 68 | 344 (best) | 61.2% |
-| 80 | 996 | 57.4% |
-| 100 | 5,852 | 57.0% |
+| 11 | 10 | 52.7% |
+| 50 | 70 | 57.3% |
+| 60 | 170 | 58.8% |
+| 72 | 491 | 61.1% |
+| 78 | 835 (best) | 61.8% |
+| 85 | 1,551 | 59.8% |
+| 100 | 5,852 | 60.9% |
 | Betting favorites | (for comparison) | 66.5% |
 
 What happened:
 
-1. **The first few games give the biggest jump.** Going from 0 to about 10
-   games takes accuracy from a coin flip to about 55%.
-2. **Gains get smaller and stop at a few hundred games** (one to two seasons).
-   170 games was already within 1 point of the best.
-3. **More data after that made it worse.** Games from 10 or 20 years ago
-   describe teams that no longer exist in that form, so they teach the
-   predictor wrong things. The predictor with all ~5,800 games was 4 points
-   worse than the one with 344, and took about 50 times longer to train.
+1. **The first few hundred games give almost all the gain.** Going from 0 to
+   491 games (about two seasons) takes accuracy from a coin flip to 61%,
+   within 1 point of the best.
+2. **After about 800 games, more data stopped helping.** The predictor with
+   all ~5,800 games was no better than the one with 835, and took about 8
+   times longer to train.
 
-So for this problem, about 3% of the data gave the best result. Training on
-the rest cost extra computing (and water) and made the answer worse. The
-right *amount* and *freshness* of data mattered more than having the most.
+So for this problem, about 8 to 15% of the data gave as good a result as all
+of it. Training on the rest cost extra computing (and water) for no gain.
+
+An earlier version only used final scores, with no record, trend, draft or
+trade information. That one peaked at 61.2% with 344 games and then got
+worse with more data (57.0% with all of it), because games from 10 or 20
+years ago describe teams that have completely changed. Record and trend
+describe how a team is doing *this season*, so old games stay useful for
+learning how much those matter.
 
 ## Limits
 
@@ -91,6 +105,12 @@ right *amount* and *freshness* of data mattered more than having the most.
 
 ## Data
 
-`data/games.csv` holds every NFL game since 1999, from
-[nflverse](https://github.com/nflverse/nfldata). Teams that moved
-(Oakland, San Diego, St. Louis) count as the same team after the move.
+All from [nflverse](https://github.com/nflverse/nfldata):
+
+- `data/games.csv`: every NFL game since 1999, plus this season's schedule.
+- `data/draft_picks.csv`: every draft pick since 1999, through the 2026 draft.
+- `data/trades.csv`: every trade since 2002. The file only goes up to
+  April 2026, so trades made during this season aren't in it yet.
+
+Teams that moved (Oakland, San Diego, St. Louis) count as the same team after
+the move.

@@ -20,9 +20,9 @@ import math
 import os
 import time
 
-from predictors import build_predictors, game_counts, team_name
+from data import load_games
+from predictors import build_predictors, game_counts
 
-DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "games.csv")
 RESULTS_FILE = os.path.join(os.path.dirname(__file__), "results", "results.csv")
 TEST_SEASONS = [2021, 2022, 2023, 2024, 2025]
 
@@ -30,28 +30,8 @@ TEST_SEASONS = [2021, 2022, 2023, 2024, 2025]
 GOOD_ENOUGH_POINTS = 1.0
 
 
-def load_games():
-    games = []
-    with open(DATA_FILE, newline="") as f:
-        for row in csv.DictReader(f):
-            if not row["home_score"]:
-                continue  # not played yet
-            margin = int(row["home_score"]) - int(row["away_score"])
-            games.append({
-                "season": int(row["season"]),
-                "date": row["gameday"],
-                "home": team_name(row["home_team"]),
-                "away": team_name(row["away_team"]),
-                "margin": margin,
-                "neutral": row["location"] == "Neutral",
-                "spread": float(row["spread_line"]) if row["spread_line"] else None,
-            })
-    games.sort(key=lambda g: g["date"])
-    return games
-
-
 def main():
-    games = load_games()
+    games, _, _ = load_games()
     seasons = {
         season: (
             [g for g in games if g["season"] < season],
@@ -77,7 +57,7 @@ def main():
             seconds[i] += time.perf_counter() - start
             for g in tests:
                 winner = g["home"] if g["margin"] > 0 else g["away"]
-                if predictor.predict(g["home"], g["away"], g["neutral"]) == winner:
+                if predictor.predict(g["home"], g["away"], g["features"], g["neutral"]) == winner:
                     correct[i] += 1
 
     accuracies = [100.0 * c / total_tests for c in correct]
