@@ -2,257 +2,152 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
-/* Layout: one reading column, like a coach's notebook; the chart and code run a little wider. */
+/* Layout: one column of game cards, each with the 100 predictors' picks as a 10 by 10 grid. */
 :root {
   --bg: #f3f5f0;
   --surface: #ffffff;
   --ink: #17251c;
   --muted: #5a6b5f;
   --line: #d5ddd4;
-  --turf: #1f6b3a;
-  --pylon: #d9580d;
-  --code-bg: #e8ede6;
+  --home: #1f6b3a;
+  --away: #d9580d;
   --display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
   --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #101713; --surface: #18221b; --ink: #e6ede6; --muted: #9aab9e;
-    --line: #2c3a30; --turf: #5cc685; --pylon: #ff8a45; --code-bg: #1c2820;
+    --line: #2c3a30; --home: #4fb877; --away: #f07a35;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #101713; --surface: #18221b; --ink: #e6ede6; --muted: #9aab9e;
-  --line: #2c3a30; --turf: #5cc685; --pylon: #ff8a45; --code-bg: #1c2820;
+  --line: #2c3a30; --home: #4fb877; --away: #f07a35;
   color-scheme: dark;
 }
 
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--body);
-  font-size: 16px;
-  line-height: 1.6;
-}
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; }
 .page {
-  max-width: 860px;
+  max-width: 760px;
   margin: 0 auto;
   padding-block: 40px 64px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   display: grid;
-  gap: 56px;
+  gap: 32px;
 }
-section { display: grid; gap: 16px; min-width: 0; }
-.prose { max-width: 65ch; }
 p { margin: 0; }
-h1, h2 {
+h1 {
   font-family: var(--display);
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.01em;
+  font-size: clamp(40px, 8vw, 68px);
   line-height: 1;
   margin: 0;
   text-wrap: balance;
 }
-h1 { font-size: clamp(44px, 9vw, 80px); font-weight: 800; }
-h2 { font-size: clamp(28px, 5vw, 38px); font-weight: 700; }
-.eyebrow {
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--turf);
-}
-.lede { font-size: 19px; max-width: 60ch; }
+header { display: grid; gap: 14px; }
+.yardline { height: 10px; background: repeating-linear-gradient(90deg, var(--home) 0 2px, transparent 2px 24px); opacity: 0.6; }
+.lede { font-size: 18px; max-width: 60ch; }
 .muted { color: var(--muted); }
-.small { font-size: 14px; }
 
-header { display: grid; gap: 18px; }
-.yardline {
-  height: 10px;
-  background: repeating-linear-gradient(90deg, var(--turf) 0 2px, transparent 2px 24px);
-  opacity: 0.6;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 2px solid var(--ink);
-  border-bottom: 1px solid var(--line);
-}
-.stat { padding: 14px 12px 14px 0; display: grid; gap: 2px; align-content: start; }
-.stat + .stat { padding-left: 12px; border-left: 1px solid var(--line); }
-.stat .label { font-size: 13px; color: var(--muted); }
-.stat .value {
-  font-family: var(--display);
-  font-weight: 800;
-  font-size: 40px;
-  line-height: 1.05;
-  font-variant-numeric: tabular-nums;
-}
-.stat.best .value { color: var(--pylon); }
-.stat .sub { font-size: 13px; color: var(--muted); }
-@media (max-width: 640px) {
-  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .stat:nth-child(3) { padding-left: 0; border-left: 0; }
-  .stat:nth-child(n+3) { border-top: 1px solid var(--line); }
-}
-
-.chart-wrap { position: relative; min-width: 0; }
-#chart { display: block; width: 100%; }
-#chart text { fill: var(--muted); font-family: var(--body); font-size: 12px; }
-#chart .grid { stroke: var(--line); stroke-width: 1; }
-#chart .axis { stroke: var(--muted); stroke-width: 1; }
-#chart .ref { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; }
-#chart .series { fill: none; stroke: var(--turf); stroke-width: 2; stroke-linejoin: round; }
-#chart .best-dot { fill: var(--pylon); stroke: var(--surface); stroke-width: 2; }
-#chart .end-dot { fill: var(--turf); stroke: var(--surface); stroke-width: 2; }
-#chart .hover-dot { fill: var(--turf); stroke: var(--surface); stroke-width: 2; }
-#chart .crosshair { stroke: var(--muted); stroke-width: 1; }
-#chart text.best-label { fill: var(--ink); font-weight: 600; }
-.chart-bg { fill: var(--surface); }
-.tooltip {
-  position: absolute;
-  pointer-events: none;
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+button {
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--ink);
   background: var(--ink);
   color: var(--bg);
-  font-size: 13px;
-  line-height: 1.4;
-  padding: 6px 10px;
-  border-radius: 4px;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
+  cursor: pointer;
 }
+button.quiet { background: transparent; color: var(--ink); border-color: var(--line); }
+button:focus-visible, select:focus-visible { outline: 2px solid var(--away); outline-offset: 2px; }
+#copy-status { font-size: 14px; color: var(--muted); }
+#copy-fallback { width: 100%; height: 160px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
 
-.panel {
+.games { display: grid; gap: 20px; }
+.game {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 6px;
-  padding: 20px;
+  padding: 18px;
   display: grid;
-  gap: 18px;
+  gap: 14px;
+  min-width: 0;
 }
-.controls { display: grid; grid-template-columns: 1fr auto auto; gap: 16px; align-items: end; }
-@media (max-width: 640px) { .controls { grid-template-columns: 1fr 1fr; } .controls .slider-field { grid-column: 1 / -1; } }
-label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
-select, input[type="range"] { font: inherit; font-size: 16px; }
+.matchup { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.matchup label { font-size: 13px; font-weight: 600; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+.matchup .at { color: var(--muted); }
+.matchup .spacer { flex: 1; }
 select {
-  padding: 6px 8px;
+  font: inherit;
+  font-size: 16px;
+  padding: 5px 8px;
   border: 1px solid var(--line);
   border-radius: 4px;
   background: var(--bg);
   color: var(--ink);
 }
-input[type="range"] { width: 100%; accent-color: var(--turf); }
-select:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--pylon); outline-offset: 2px; }
-.pick { display: grid; gap: 4px; }
-.pick .big { font-family: var(--display); font-weight: 800; font-size: 36px; line-height: 1.1; text-transform: uppercase; }
-.ratings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; font-size: 14px; font-variant-numeric: tabular-nums; }
-@media (max-width: 640px) { .ratings { grid-template-columns: minmax(0, 1fr); } }
-.ratings div { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 4px 0; }
+.date { font-size: 13px; color: var(--muted); }
 
-ol.steps { margin: 0; padding-left: 1.4em; display: grid; gap: 10px; max-width: 65ch; }
-pre {
-  margin: 0;
-  background: var(--code-bg);
-  border-radius: 6px;
-  padding: 16px;
-  overflow-x: auto;
-  font-family: var(--mono);
-  font-size: 13.5px;
-  line-height: 1.55;
+.vote { display: grid; gap: 6px; }
+.vote-line { display: flex; justify-content: space-between; gap: 12px; font-family: var(--display); font-weight: 800; font-size: 30px; line-height: 1; text-transform: uppercase; font-variant-numeric: tabular-nums; }
+.vote-line .h { color: var(--home); }
+.vote-line .a { color: var(--away); }
+.vote-line small { font-family: var(--body); font-size: 13px; font-weight: 500; color: var(--muted); text-transform: none; }
+.bar { display: flex; height: 10px; border-radius: 3px; overflow: hidden; gap: 2px; }
+.bar .h { background: var(--home); }
+.bar .a { background: var(--away); }
+
+.grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; max-width: 420px; }
+.cell {
+  aspect-ratio: 1;
+  max-width: 100%;
+  border: 0;
+  padding: 0;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--surface);
+  font-variant-numeric: tabular-nums;
 }
-
-details summary { cursor: pointer; font-weight: 600; }
-.table-scroll { overflow-x: auto; margin-top: 12px; }
-table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
-th, td { text-align: right; padding: 4px 10px; border-bottom: 1px solid var(--line); }
-th { color: var(--muted); font-weight: 600; }
-tr.best-row td { color: var(--pylon); font-weight: 600; }
-footer { font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
-footer a { color: inherit; }
+.cell.h { background: var(--home); }
+.cell.a { background: var(--away); }
+.cell.selected { outline: 2px solid var(--ink); outline-offset: 1px; }
+.grid-caption { font-size: 13px; color: var(--muted); }
+.detail { font-size: 14px; min-height: 1.5em; font-variant-numeric: tabular-nums; }
 </style>
 
 <div class="page">
   <header>
     <div class="yardline" aria-hidden="true"></div>
-    <div class="eyebrow">A science project</div>
     <h1>Same Algorithm, More Data</h1>
-    <p class="lede">100 copies of one NFL prediction algorithm. The only difference between them is how many past games each copy learns from, from none at all up to every game since 1999. Where does more data stop helping?</p>
-    <p class="prose muted">This matters for AI because training on more data takes more computing, and computing uses electricity and water to cool data centers. If an AI stops getting better after a certain amount of data, everything past that point costs water for nothing.</p>
+    <p class="lede">100 copies of one NFL prediction algorithm. Predictor 1 learns from 0 games, predictor 100 learns from <span id="all-games"></span> games, and the rest learn from amounts in between. Here is what each one picks.</p>
+    <p class="muted">Each predictor learns from the most recent finished games. Change a matchup, remove it, or add your own. Tap a square to see that predictor's pick.</p>
   </header>
 
-  <section aria-labelledby="results-h">
-    <h2 id="results-h">The results</h2>
-    <p class="prose" id="results-intro">Each predictor was tested on the 2021 to 2025 seasons, games it never saw while learning.</p>
-    <div class="stats" id="stats"></div>
-    <div class="chart-wrap" id="chart-wrap">
-      <svg id="chart" role="img" aria-labelledby="chart-title"><title id="chart-title">Accuracy of each predictor by number of games it learned from</title></svg>
-      <div class="tooltip" id="tooltip" hidden></div>
-    </div>
-    <p class="prose small muted" id="chart-note"></p>
-  </section>
+  <div class="toolbar">
+    <button type="button" id="add-game">Add a game</button>
+    <button type="button" class="quiet" id="copy-picks">Copy all picks</button>
+    <span id="copy-status" role="status"></span>
+  </div>
+  <textarea id="copy-fallback" readonly hidden></textarea>
 
-  <section aria-labelledby="try-h">
-    <h2 id="try-h">Try one predictor</h2>
-    <p class="prose">Pick a predictor with the slider, then pick a matchup. The predictor learns from the most recent games, the same amount it got in the test.</p>
-    <div class="panel">
-      <div class="controls">
-        <label class="slider-field" for="predictor-slider">Predictor <span id="slider-label"></span>
-          <input type="range" id="predictor-slider" min="1" max="100" value="68">
-        </label>
-        <label for="home-select">Home team <select id="home-select"></select></label>
-        <label for="away-select">Away team <select id="away-select"></select></label>
-      </div>
-      <div class="pick" id="pick"></div>
-      <div>
-        <div class="eyebrow" style="margin-bottom:6px">Its top 10 teams</div>
-        <div class="ratings" id="ratings"></div>
-      </div>
-    </div>
-  </section>
-
-  <section aria-labelledby="algo-h">
-    <h2 id="algo-h">The algorithm</h2>
-    <p class="prose">All 100 predictors run this exact code. It's the same code that produced the results above, running in your browser right now.</p>
-    <ol class="steps">
-      <li>Give every team a strength rating of 0, and set the home-field bonus to 0.</li>
-      <li>For each game it learns from, the predicted score margin is: home rating + home bonus − away rating.</li>
-      <li>Go through the teams one at a time and set each rating to the value that best matches that team's real score margins, given its opponents' ratings. Then do the same for the home bonus.</li>
-      <li>Repeat step 3 thirty times, so the ratings settle down.</li>
-      <li>Every rating is pulled a little toward 0, as if each team also played 3 perfectly average games. This keeps a team that won one game by 40 from looking unbeatable.</li>
-      <li>To predict a game, pick the side the formula from step 2 favors. With no data, everything is 0, so it flips a coin.</li>
-    </ol>
-    <pre><code id="algo-code"></code></pre>
-  </section>
-
-  <section aria-labelledby="table-h">
-    <h2 id="table-h">All 100 predictors</h2>
-    <details>
-      <summary>Show the full table</summary>
-      <div class="table-scroll">
-        <table>
-          <thead><tr><th>Predictor</th><th>Games learned from</th><th>Accuracy</th><th>Change from previous</th></tr></thead>
-          <tbody id="table-body"></tbody>
-        </table>
-      </div>
-    </details>
-  </section>
-
-  <footer>
-    Game data: every NFL game since 1999, from <a href="https://github.com/nflverse/nfldata" target="_blank" rel="noopener">nflverse</a>. Teams that moved (Oakland, San Diego, St. Louis) count as the same team after the move.
-  </footer>
+  <div class="games" id="games"></div>
 </div>
 
 <script>
 /*__DATA__*/
 </script>
 
-<script id="algorithm">
+<script>
 const PRIOR_GAMES = 3;
 const TRAINING_PASSES = 30;
 
@@ -332,209 +227,134 @@ function gameCounts(maxGames, count = 100) {
   return counts;
 }
 </script>
-
 <script>
 const fmt = n => n.toLocaleString("en-US");
-const pct = n => n.toFixed(1) + "%";
 
 const GAMES = GAME_ROWS.split(";").map(row => {
-  const [season, home, away, margin, neutral, spread] = row.split(",");
-  return {
-    season: +season, home: TEAMS[+home], away: TEAMS[+away], margin: +margin,
-    neutral: neutral === "1", spread: spread === "" ? null : +spread,
-  };
+  const [home, away, margin, neutral] = row.split(",");
+  return { home: TEAMS[+home], away: TEAMS[+away], margin: +margin, neutral: neutral === "1" };
 });
-
-// Run the experiment: for each test season, every predictor learns from the
-// N most recent games before that season, then predicts that season.
-function runExperiment() {
-  const seasons = TEST_SEASONS.map(season => ({
-    season,
-    history: GAMES.filter(g => g.season < season),
-    tests: GAMES.filter(g => g.season === season && g.margin !== 0),
-  }));
-  const maxGames = Math.min(...seasons.map(s => s.history.length));
-  const counts = gameCounts(maxGames);
-  const correct = counts.map(() => 0);
-  let totalTests = 0;
-  for (const { season, history, tests } of seasons) {
-    totalTests += tests.length;
-    counts.forEach((n, i) => {
-      const p = new Predictor(i + 1, season);
-      p.train(n ? history.slice(history.length - n) : []);
-      for (const g of tests) {
-        const winner = g.margin > 0 ? g.home : g.away;
-        if (p.predict(g.home, g.away, g.neutral) === winner) correct[i]++;
-      }
-    });
-  }
-  const accuracy = correct.map(c => (100 * c) / totalTests);
-  const spreadTests = seasons.flatMap(s => s.tests).filter(g => g.spread);
-  const vegas = (100 * spreadTests.filter(g => (g.spread > 0) === (g.margin > 0)).length) / spreadTests.length;
-  return { counts, accuracy, totalTests, maxGames, vegas };
-}
-
-const R = runExperiment();
-const bestIndex = R.accuracy.indexOf(Math.max(...R.accuracy));
-const best = R.accuracy[bestIndex];
-const goodIndex = R.accuracy.findIndex(a => a >= best - 1);
-const marginOfError = 100 * 1.96 * Math.sqrt(0.25 / R.totalTests);
-
-document.getElementById("results-intro").textContent =
-  `Each predictor was tested on the ${TEST_SEASONS[0]} to ${TEST_SEASONS[TEST_SEASONS.length - 1]} seasons: ${fmt(R.totalTests)} games it never saw while learning. For each season, it learned from the most recent games played before that season started.`;
-
-document.getElementById("stats").innerHTML = [
-  ["No data", pct(R.accuracy[0]), "Predictor 1, 0 games, pure coin flips", ""],
-  ["Best", pct(best), `Predictor ${bestIndex + 1}, ${fmt(R.counts[bestIndex])} games`, "best"],
-  ["All the data", pct(R.accuracy[99]), `Predictor 100, ${fmt(R.maxGames)} games`, ""],
-  ["Betting favorites", pct(R.vegas), "For comparison", ""],
-].map(([label, value, sub, cls]) =>
-  `<div class="stat ${cls}"><span class="label">${label}</span><span class="value">${value}</span><span class="sub">${sub}</span></div>`
-).join("");
-
-document.getElementById("chart-note").textContent =
-  `Accuracy rises fast over the first few games, levels off, and peaks at ${fmt(R.counts[bestIndex])} games. ` +
-  `${fmt(R.counts[goodIndex])} games already gets within 1 point of the best. After that, older games make it worse: ` +
-  `teams from 10 or 20 years ago teach it the wrong things. Each accuracy could be off by about ±${marginOfError.toFixed(1)} points by luck, ` +
-  `so look at the overall shape, not single bumps. Even predictor 1's ${pct(R.accuracy[0])} is coin-flip luck: run with different coins, a no-data predictor lands anywhere from about 47% to 54%.`;
-
-// Chart: accuracy against games learned from, on a log scale.
-const svg = document.getElementById("chart");
-const tooltip = document.getElementById("tooltip");
-const wrap = document.getElementById("chart-wrap");
-const NS = "http://www.w3.org/2000/svg";
-
-function el(tag, attrs, text) {
-  const node = document.createElementNS(NS, tag);
-  for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
-  if (text !== undefined) node.textContent = text;
-  svg.appendChild(node);
-  return node;
-}
-
-let chartGeometry = null;
-
-function drawChart() {
-  const width = wrap.clientWidth;
-  const narrow = width < 520;
-  const height = narrow ? 300 : 380;
-  const m = { top: 16, right: narrow ? 12 : 160, bottom: 48, left: 44 };
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  svg.setAttribute("height", height);
-  [...svg.querySelectorAll(":scope > :not(title)")].forEach(n => n.remove());
-
-  const yMin = 45, yMax = 70;
-  const logMax = Math.log10(R.maxGames + 1);
-  const x = n => m.left + (Math.log10(n + 1) / logMax) * (width - m.left - m.right);
-  const y = a => m.top + ((yMax - a) / (yMax - yMin)) * (height - m.top - m.bottom);
-
-  el("rect", { class: "chart-bg", x: 0, y: 0, width, height });
-  for (let a = yMin; a <= yMax; a += 5) {
-    el("line", { class: "grid", x1: m.left, x2: width - m.right, y1: y(a), y2: y(a) });
-    el("text", { x: m.left - 8, y: y(a) + 4, "text-anchor": "end" }, a + "%");
-  }
-  el("line", { class: "axis", x1: m.left, x2: width - m.right, y1: height - m.bottom, y2: height - m.bottom });
-  const ticks = narrow ? [0, 10, 100, 1000] : [0, 1, 10, 100, 1000, R.maxGames];
-  for (const t of ticks) {
-    el("line", { class: "axis", x1: x(t), x2: x(t), y1: height - m.bottom, y2: height - m.bottom + 5 });
-    el("text", { x: x(t), y: height - m.bottom + 20, "text-anchor": "middle" }, fmt(t));
-  }
-  el("text", { x: m.left + (width - m.left - m.right) / 2, y: height - 8, "text-anchor": "middle" },
-    "Games learned from (each step is 10× more)");
-
-  for (const [value, label] of [[50, "Coin flip"], [R.vegas, "Betting favorites"]]) {
-    el("line", { class: "ref", x1: m.left, x2: width - m.right, y1: y(value), y2: y(value) });
-    if (narrow) el("text", { x: width - m.right, y: y(value) - 6, "text-anchor": "end" }, `${label} ${pct(value)}`);
-    else el("text", { x: width - m.right + 8, y: y(value) + 4 }, `${label} ${pct(value)}`);
-  }
-
-  const d = R.counts.map((n, i) => `${i ? "L" : "M"}${x(n).toFixed(1)},${y(R.accuracy[i]).toFixed(1)}`).join("");
-  el("path", { class: "series", d });
-  el("circle", { class: "end-dot", cx: x(0), cy: y(R.accuracy[0]), r: 4 });
-  el("circle", { class: "end-dot", cx: x(R.maxGames), cy: y(R.accuracy[99]), r: 4 });
-  const bx = x(R.counts[bestIndex]), by = y(best);
-  el("circle", { class: "best-dot", cx: bx, cy: by, r: 6 });
-  el("text", { class: "best-label", x: bx, y: by - 14, "text-anchor": "middle" },
-    `Best: ${pct(best)} at ${fmt(R.counts[bestIndex])} games`);
-
-  el("line", { class: "crosshair", id: "crosshair", x1: 0, x2: 0, y1: m.top, y2: height - m.bottom, visibility: "hidden" });
-  el("circle", { class: "hover-dot", id: "hover-dot", r: 5, cx: 0, cy: 0, visibility: "hidden" });
-  chartGeometry = { x, y };
-}
-
-function showHover(clientX) {
-  const rect = svg.getBoundingClientRect();
-  const px = clientX - rect.left;
-  let nearest = 0;
-  R.counts.forEach((n, i) => {
-    if (Math.abs(chartGeometry.x(n) - px) < Math.abs(chartGeometry.x(R.counts[nearest]) - px)) nearest = i;
-  });
-  const cx = chartGeometry.x(R.counts[nearest]);
-  const cy = chartGeometry.y(R.accuracy[nearest]);
-  const cross = document.getElementById("crosshair");
-  const dot = document.getElementById("hover-dot");
-  cross.setAttribute("x1", cx); cross.setAttribute("x2", cx); cross.setAttribute("visibility", "visible");
-  dot.setAttribute("cx", cx); dot.setAttribute("cy", cy); dot.setAttribute("visibility", "visible");
-  tooltip.innerHTML = `<strong>Predictor ${nearest + 1}</strong><br>${fmt(R.counts[nearest])} games · ${pct(R.accuracy[nearest])} right`;
-  tooltip.hidden = false;
-  const tw = tooltip.offsetWidth;
-  tooltip.style.left = Math.min(Math.max(cx - tw / 2, 0), rect.width - tw) + "px";
-  tooltip.style.top = Math.max(cy - 58, 0) + "px";
-}
-function hideHover() {
-  tooltip.hidden = true;
-  document.getElementById("crosshair")?.setAttribute("visibility", "hidden");
-  document.getElementById("hover-dot")?.setAttribute("visibility", "hidden");
-}
-svg.addEventListener("pointermove", e => showHover(e.clientX));
-svg.addEventListener("pointerleave", hideHover);
-
-drawChart();
-new ResizeObserver(() => { hideHover(); drawChart(); }).observe(wrap);
-
-// Table of all 100.
-document.getElementById("table-body").innerHTML = R.counts.map((n, i) => {
-  const change = i ? R.accuracy[i] - R.accuracy[i - 1] : 0;
-  return `<tr class="${i === bestIndex ? "best-row" : ""}"><td>${i + 1}</td><td>${fmt(n)}</td><td>${pct(R.accuracy[i])}</td><td>${i ? (change >= 0 ? "+" : "−") + Math.abs(change).toFixed(1) : ""}</td></tr>`;
-}).join("");
-
-// Show the exact algorithm code.
-document.getElementById("algo-code").textContent = document.getElementById("algorithm").textContent.trim();
-
-// Try one predictor.
-const CURRENT_TEAMS = [...new Set(GAMES.filter(g => g.season === Math.max(...GAMES.map(x => x.season))).flatMap(g => [g.home, g.away]))].sort();
-const homeSelect = document.getElementById("home-select");
-const awaySelect = document.getElementById("away-select");
-const slider = document.getElementById("predictor-slider");
-for (const s of [homeSelect, awaySelect]) {
-  s.innerHTML = CURRENT_TEAMS.map(t => `<option value="${t}">${t}</option>`).join("");
-}
-homeSelect.value = "KC";
-awaySelect.value = "BUF";
-slider.value = bestIndex + 1;
-
-function updatePick() {
-  const i = +slider.value - 1;
-  const n = R.counts[i];
-  const home = homeSelect.value, away = awaySelect.value;
-  document.getElementById("slider-label").textContent = `${i + 1}: learns from ${fmt(n)} games`;
-  const pickEl = document.getElementById("pick");
-  if (home === away) {
-    pickEl.innerHTML = `<span class="muted">Pick two different teams.</span>`;
-    return;
-  }
+const COUNTS = gameCounts(GAMES.length);
+const PREDICTORS = COUNTS.map((n, i) => {
   const p = new Predictor(i + 1, 0);
   p.train(n ? GAMES.slice(GAMES.length - n) : []);
-  const margin = p.predictedMargin(home, away);
-  const winner = p.predict(home, away);
-  pickEl.innerHTML = margin === 0
-    ? `<span class="big">${winner}</span><span class="muted">It knows nothing about either team, so this is a coin flip.</span>`
-    : `<span class="big">${winner} by ${Math.abs(margin).toFixed(1)}</span><span class="muted">In the test, predictor ${i + 1} was right ${pct(R.accuracy[i])} of the time.</span>`;
-  const ranked = [...p.ratings].filter(([t]) => CURRENT_TEAMS.includes(t)).sort((a, b) => b[1] - a[1]).slice(0, 10);
-  document.getElementById("ratings").innerHTML = ranked.length
-    ? ranked.map(([t, r], k) => `<div><span>${k + 1}. ${t}</span><span>${r >= 0 ? "+" : "−"}${Math.abs(r).toFixed(1)}</span></div>`).join("")
-    : `<span class="muted">No ratings yet. It hasn't seen any games.</span>`;
+  return p;
+});
+const CURRENT_TEAMS = [...new Set(GAMES.slice(-300).flatMap(g => [g.home, g.away]))].sort();
+
+document.getElementById("all-games").textContent = fmt(GAMES.length);
+
+const gamesEl = document.getElementById("games");
+let nextId = 0;
+
+function dateLabel(iso) {
+  if (!iso) return "";
+  const d = new Date(iso + "T12:00:00");
+  return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 }
-for (const c of [slider, homeSelect, awaySelect]) c.addEventListener("input", updatePick);
-updatePick();
+
+function picksFor(home, away) {
+  return PREDICTORS.map((p, i) => ({
+    predictor: i + 1,
+    games: COUNTS[i],
+    pick: p.predict(home, away),
+    margin: Math.abs(p.predictedMargin(home, away)),
+  }));
+}
+
+function teamOptions(selected) {
+  return CURRENT_TEAMS.map(t => `<option value="${t}"${t === selected ? " selected" : ""}>${t}</option>`).join("");
+}
+
+function addGame(home, away, date) {
+  const id = nextId++;
+  const card = document.createElement("article");
+  card.className = "game";
+  card.innerHTML = `
+    <div class="matchup">
+      <label for="away-${id}">Away <select id="away-${id}">${teamOptions(away)}</select></label>
+      <span class="at">at</span>
+      <label for="home-${id}">Home <select id="home-${id}">${teamOptions(home)}</select></label>
+      <span class="date">${dateLabel(date)}</span>
+      <span class="spacer"></span>
+      <button type="button" class="quiet remove">Remove</button>
+    </div>
+    <div class="vote"></div>
+    <div class="grid" role="group" aria-label="The 100 predictors' picks"></div>
+    <div class="grid-caption">Predictor 1 (0 games) is top left. Predictor 100 (${fmt(GAMES.length)} games) is bottom right.</div>
+    <div class="detail" aria-live="polite"></div>`;
+  gamesEl.appendChild(card);
+  const homeSel = card.querySelector(`#home-${id}`);
+  const awaySel = card.querySelector(`#away-${id}`);
+  card.querySelector(".remove").addEventListener("click", () => card.remove());
+  homeSel.addEventListener("input", () => renderGame(card));
+  awaySel.addEventListener("input", () => renderGame(card));
+  renderGame(card);
+}
+
+function renderGame(card) {
+  const home = card.querySelector('[id^="home-"]').value;
+  const away = card.querySelector('[id^="away-"]').value;
+  const vote = card.querySelector(".vote");
+  const grid = card.querySelector(".grid");
+  const detail = card.querySelector(".detail");
+  detail.textContent = "";
+  if (home === away) {
+    vote.innerHTML = `<span class="muted">Pick two different teams.</span>`;
+    grid.innerHTML = "";
+    card.picks = null;
+    return;
+  }
+  const picks = picksFor(home, away);
+  card.picks = { home, away, picks };
+  const homeVotes = picks.filter(p => p.pick === home).length;
+  const awayVotes = 100 - homeVotes;
+  vote.innerHTML = `
+    <div class="vote-line"><span class="a">${away} ${awayVotes} <small>votes</small></span><span class="h">${home} ${homeVotes} <small>votes</small></span></div>
+    <div class="bar" aria-hidden="true">${awayVotes ? `<span class="a" style="flex:${awayVotes}"></span>` : ""}${homeVotes ? `<span class="h" style="flex:${homeVotes}"></span>` : ""}</div>`;
+  grid.innerHTML = picks.map(p =>
+    `<button type="button" class="cell ${p.pick === home ? "h" : "a"}" data-i="${p.predictor - 1}" aria-label="Predictor ${p.predictor}, ${fmt(p.games)} games, picks ${p.pick}"></button>`
+  ).join("");
+  grid.querySelectorAll(".cell").forEach(cell => {
+    cell.addEventListener("click", () => {
+      grid.querySelectorAll(".selected").forEach(c => c.classList.remove("selected"));
+      cell.classList.add("selected");
+      const p = picks[+cell.dataset.i];
+      detail.textContent = p.games === 0
+        ? `Predictor 1 learned from 0 games, so it flipped a coin: ${p.pick}.`
+        : `Predictor ${p.predictor} learned from ${fmt(p.games)} games and picks ${p.pick} by ${p.margin.toFixed(1)} points.`;
+    });
+  });
+}
+
+document.getElementById("add-game").addEventListener("click", () => addGame("KC", "BUF", ""));
+
+document.getElementById("copy-picks").addEventListener("click", () => {
+  const lines = ["away,home,predictor,games_learned_from,pick,by_points"];
+  for (const card of gamesEl.querySelectorAll(".game")) {
+    if (!card.picks) continue;
+    const { home, away, picks } = card.picks;
+    for (const p of picks) lines.push(`${away},${home},${p.predictor},${p.games},${p.pick},${p.margin.toFixed(1)}`);
+  }
+  const text = lines.join("\n");
+  const status = document.getElementById("copy-status");
+  const fallback = document.getElementById("copy-fallback");
+  const showFallback = () => {
+    fallback.value = text;
+    fallback.hidden = false;
+    fallback.select();
+    status.textContent = "Copy the selected text below.";
+  };
+  try {
+    navigator.clipboard.writeText(text).then(
+      () => { status.textContent = `Copied ${lines.length - 1} picks. Paste them into a spreadsheet.`; fallback.hidden = true; },
+      showFallback
+    );
+  } catch (e) {
+    showFallback();
+  }
+});
+
+if (UPCOMING.length) UPCOMING.forEach(([date, home, away]) => addGame(home, away, date));
+else addGame("KC", "BUF", "");
 </script>

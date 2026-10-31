@@ -40,18 +40,15 @@ python predict.py KC BUF
 
 ## Website
 
-`website/index.html` runs the same algorithm in a web browser. It shows the
-results chart, lets you try any of the 100 predictors on a matchup, and shows
-the algorithm's code. Open it in a browser, or rebuild it after changing the
-data or template:
+`website/index.html` shows what all 100 predictors pick for upcoming games.
+It starts with the next week on the schedule. You can change, remove, or add
+games, and copy every pick to paste into a spreadsheet. Each predictor learns
+from the most recent finished games. Open it in a browser, or rebuild it after
+updating `data/games.csv`:
 
 ```bash
 python website/build.py
 ```
-
-The website flips its own coins, so the no-data predictor's score there
-(54.0%) differs from the Python version's (50.4%). Both are coin-flip luck.
-Every other predictor gets the same score in both.
 
 ## Results
 
