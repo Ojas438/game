@@ -50,7 +50,7 @@ python predict.py KC BUF
 ## Website
 
 `website/index.html` shows what all 100 predictors pick for upcoming games.
-It starts with the next week on the schedule. You can change, remove, or add
+It starts with every game from today through Friday. You can change, remove, or add
 games, and copy every pick to paste into a spreadsheet. Each predictor learns
 from the most recent finished games. Open it in a browser, or rebuild it after
 updating `data/games.csv`:
