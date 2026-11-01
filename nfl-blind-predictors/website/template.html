@@ -128,6 +128,24 @@ select {
 .team-info th:first-child { text-align: left; }
 .team-info thead th { font-size: 12px; font-weight: 600; color: var(--muted); }
 .detail { font-size: 14px; min-height: 1.5em; font-variant-numeric: tabular-nums; }
+
+.all-picks { display: grid; gap: 10px; min-width: 0; }
+.all-picks h2 { font-family: var(--display); font-weight: 800; text-transform: uppercase; font-size: 32px; line-height: 1; margin: 0; }
+.picks-scroll {
+  overflow: auto;
+  max-height: 75vh;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+.picks-table { border-collapse: separate; border-spacing: 0; font-size: 14px; font-variant-numeric: tabular-nums; }
+.picks-table th, .picks-table td { padding: 5px 10px; border-bottom: 1px solid var(--line); text-align: center; white-space: nowrap; background: var(--surface); }
+.picks-table thead th { position: sticky; top: 0; z-index: 1; font-size: 12px; font-weight: 600; color: var(--muted); line-height: 1.3; }
+.picks-table .who { position: sticky; left: 0; text-align: left; border-right: 1px solid var(--line); }
+.picks-table thead .who { z-index: 2; }
+.picks-table .who span { color: var(--muted); font-size: 12px; margin-left: 6px; }
+.picks-table td.h { color: var(--home); font-weight: 600; }
+.picks-table td.a { color: var(--away); font-weight: 600; }
 </style>
 
 <div class="page">
@@ -147,6 +165,17 @@ select {
   <textarea id="copy-fallback" readonly hidden></textarea>
 
   <div class="games" id="games"></div>
+
+  <section class="all-picks" aria-labelledby="all-picks-h">
+    <h2 id="all-picks-h">Every predictor's picks</h2>
+    <p class="muted">One row per predictor, one column per game above. Green is a home-team pick and orange is an away-team pick.</p>
+    <div class="picks-scroll">
+      <table class="picks-table">
+        <thead id="picks-head"></thead>
+        <tbody id="picks-body"></tbody>
+      </table>
+    </div>
+  </section>
 </div>
 
 <script>
@@ -333,10 +362,11 @@ function addGame(home, away, date, neutral = false) {
     <div class="grid-caption">Predictor 1 (0 games) is top left. Predictor 100 (${fmt(GAMES.length)} games) is bottom right.</div>
     <div class="detail" aria-live="polite"></div>`;
   card.neutral = neutral;
+  card.date = date;
   gamesEl.appendChild(card);
   const homeSel = card.querySelector(`#home-${id}`);
   const awaySel = card.querySelector(`#away-${id}`);
-  card.querySelector(".remove").addEventListener("click", () => card.remove());
+  card.querySelector(".remove").addEventListener("click", () => { card.remove(); renderPicksTable(); });
   homeSel.addEventListener("input", () => renderGame(card));
   awaySel.addEventListener("input", () => renderGame(card));
   renderGame(card);
@@ -354,11 +384,12 @@ function renderGame(card) {
     grid.innerHTML = "";
     card.querySelector(".team-info tbody").innerHTML = "";
     card.picks = null;
+    renderPicksTable();
     return;
   }
   card.querySelector(".team-info tbody").innerHTML = teamRow(away, "away") + teamRow(home, "home");
   const picks = picksFor(home, away, card.neutral);
-  card.picks = { home, away, picks };
+  card.picks = { home, away, picks, date: card.date };
   const homeVotes = picks.filter(p => p.pick === home).length;
   const awayVotes = 100 - homeVotes;
   vote.innerHTML = `
@@ -367,6 +398,7 @@ function renderGame(card) {
   grid.innerHTML = picks.map(p =>
     `<button type="button" class="cell ${p.pick === home ? "h" : "a"}" data-i="${p.predictor - 1}" aria-label="Predictor ${p.predictor}, ${fmt(p.games)} games, picks ${p.pick}"></button>`
   ).join("");
+  renderPicksTable();
   grid.querySelectorAll(".cell").forEach(cell => {
     cell.addEventListener("click", () => {
       grid.querySelectorAll(".selected").forEach(c => c.classList.remove("selected"));
@@ -406,6 +438,19 @@ document.getElementById("copy-picks").addEventListener("click", () => {
     showFallback();
   }
 });
+
+function renderPicksTable() {
+  const games = [...gamesEl.querySelectorAll(".game")].map(c => c.picks).filter(Boolean);
+  document.getElementById("picks-head").innerHTML =
+    `<tr><th class="who">Predictor</th>${games.map(g =>
+      `<th>${g.away} @ ${g.home}${g.date ? `<br>${dateLabel(g.date)}` : ""}</th>`).join("")}</tr>`;
+  document.getElementById("picks-body").innerHTML = COUNTS.map((n, i) =>
+    `<tr><th scope="row" class="who">#${i + 1}<span>${fmt(n)} games</span></th>${games.map(g => {
+      const pick = g.picks[i].pick;
+      return `<td class="${pick === g.home ? "h" : "a"}">${pick}</td>`;
+    }).join("")}</tr>`
+  ).join("");
+}
 
 if (UPCOMING.length) UPCOMING.forEach(([date, home, away, neutral]) => addGame(home, away, date, neutral === 1));
 else addGame("KC", "BUF", "");
