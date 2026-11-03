@@ -319,13 +319,17 @@ function dateLabel(iso) {
   return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 }
 
+// Games already picked by weekly.py show those saved picks. Other games are
+// picked live.
 function picksFor(home, away, neutral) {
+  const locked = LOCKED[`${away} at ${home}`];
   const features = FEATURES.map(k => CURRENT[home][k] - CURRENT[away][k]);
   return PREDICTORS.map((p, i) => ({
     predictor: i + 1,
     games: COUNTS[i],
-    pick: p.predict(home, away, features, neutral),
-    margin: Math.abs(p.predictedMargin(home, away, features, neutral)),
+    pick: locked ? locked.picks[i] : p.predict(home, away, features, neutral),
+    margin: locked ? null : Math.abs(p.predictedMargin(home, away, features, neutral)),
+    lockedOn: locked ? locked.date : null,
   }));
 }
 
@@ -404,7 +408,9 @@ function renderGame(card) {
       grid.querySelectorAll(".selected").forEach(c => c.classList.remove("selected"));
       cell.classList.add("selected");
       const p = picks[+cell.dataset.i];
-      detail.textContent = p.games === 0
+      detail.textContent = p.lockedOn
+        ? `Predictor ${p.predictor} picks ${p.pick}. Locked in on ${dateLabel(p.lockedOn)}.`
+        : p.games === 0
         ? `Predictor 1 learned from 0 games, so it flipped a coin: ${p.pick}.`
         : `Predictor ${p.predictor} learned from ${fmt(p.games)} games and picks ${p.pick} by ${p.margin.toFixed(1)} points.`;
     });

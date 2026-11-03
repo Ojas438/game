@@ -47,6 +47,34 @@ To have all 100 vote on an upcoming game:
 python predict.py KC BUF
 ```
 
+## Weekly routine
+
+Before the first game of each week (usually Thursday):
+
+```bash
+python weekly.py update
+```
+
+```bash
+python weekly.py pick
+```
+
+This downloads the latest scores and trades, then saves all 100 predictors'
+picks to `picks/<date>.csv`. Saved picks are never changed.
+
+After the games:
+
+```bash
+python weekly.py update
+```
+
+```bash
+python weekly.py score
+```
+
+This scores every saved pick and writes the season totals to
+`results/season_scoreboard.csv`.
+
 ## Website
 
 `website/index.html` shows what all 100 predictors pick for upcoming games.
