@@ -120,6 +120,37 @@ years ago describe teams that have completely changed. Record and trend
 describe how a team is doing *this season*, so old games stay useful for
 learning how much those matter.
 
+## Which kind of data matters?
+
+```bash
+python ablation.py
+```
+
+Runs the same test six times: with all four stats, with scores only, and
+with each stat left out. Average accuracy over the predictors in each range
+(1,420 test games, 2021 to 2025):
+
+| Version | 1 to 100 games | 100 to 1,000 games | 1,000+ games |
+| --- | --- | --- | --- |
+| All four stats | 54.9% | 59.3% | 60.7% |
+| Scores only | 55.4% | 59.3% | 57.3% |
+| No record | 53.7% | 58.4% | 60.3% |
+| No trend | 56.2% | 59.5% | 60.0% |
+| No draft | 55.4% | 59.7% | 60.5% |
+| No trades | 54.9% | 59.1% | 60.6% |
+
+- With lots of data, the four stats together add about 3.4 points over
+  scores only (60.7% vs 57.3%), and stop old games from making it worse.
+- Leaving out any one stat costs less than 1 point. Record and trend both
+  describe how a team is playing this season, so either one can mostly
+  cover for the other.
+- Draft and trades made almost no difference.
+- With very little data, fewer stats did slightly better, because there
+  are fewer weights to learn from a few games.
+- Most of these differences are under 1 point, which is within the margin of
+  error. Only the gap between all four stats and scores only with 1,000+
+  games is clearly bigger than luck.
+
 ## Limits
 
 - Each accuracy has a margin of error of about +/-2.6 points, because 1,420
