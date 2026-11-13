@@ -14,7 +14,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 
-from data import FEATURES, load_games  # noqa: E402
+from data import FEATURES, GAMES_FILE, load_games, team_name  # noqa: E402
 
 
 def main():
@@ -30,23 +30,39 @@ def main():
         + numbers(g["features"])
         for g in games
     )
-    # Every game left in the next week on the schedule.
+    # Every game in the current week: the week of the next game not yet
+    # played, including that week's games that are already finished.
     today = datetime.date.today().isoformat()
     left = [g for g in upcoming if g["date"] >= today]
-    shown = [
-        [g["date"], g["home"], g["away"], int(g["neutral"])]
-        for g in left
-        if (g["season"], g["week"]) == (left[0]["season"], left[0]["week"])
-    ] if left else []
+    week = (left[0]["season"], left[0]["week"]) if left else None
+    this_week = sorted(
+        (g for g in games + upcoming if (g["season"], g["week"]) == week),
+        key=lambda g: g["date"],
+    )
+    shown = [[g["date"], g["home"], g["away"], int(g["neutral"])] for g in this_week]
+    # Final scores for this week's finished games.
+    with open(GAMES_FILE, newline="") as f:
+        results = {
+            f"{team_name(r['away_team'])} at {team_name(r['home_team'])}":
+                [int(r["away_score"]), int(r["home_score"])]
+            for r in csv.DictReader(f)
+            if week and (int(r["season"]), r["week"]) == week and r["home_score"]
+        }
+    # Each predictor's season record so far, from weekly.py score.
+    scoreboard_file = os.path.join(os.path.dirname(HERE), "results", "season_scoreboard.csv")
+    season = []
+    if os.path.exists(scoreboard_file):
+        with open(scoreboard_file, newline="") as f:
+            season = [[int(r["right"]), int(r["games_scored"])] for r in csv.DictReader(f)]
     # Picks already locked in by weekly.py, so the page shows exactly those.
     locked = {}
     for path in sorted(glob.glob(os.path.join(os.path.dirname(HERE), "picks", "????-??-??.csv"))):
         with open(path, newline="") as f:
-            rows = list(csv.reader(f))
-        for col, matchup in enumerate(rows[0][2:], start=2):
+            pick_rows = list(csv.reader(f))
+        for col, matchup in enumerate(pick_rows[0][2:], start=2):
             locked[matchup] = {
                 "date": os.path.basename(path)[:10],
-                "picks": [r[col] for r in rows[1:]],
+                "picks": [r[col] for r in pick_rows[1:]],
             }
     current = {
         team: {**tracker.features(team), "wins_losses": tracker.record_text(team)}
@@ -58,6 +74,8 @@ def main():
         f"const UPCOMING = {json.dumps(shown)};\n"
         f"const CURRENT = {json.dumps(current)};\n"
         f"const LOCKED = {json.dumps(locked)};\n"
+        f"const RESULTS = {json.dumps(results)};\n"
+        f"const SEASON = {json.dumps(season)};\n"
         f"const GAME_ROWS = \"{rows}\";"
     )
     with open(os.path.join(HERE, "template.html")) as f:

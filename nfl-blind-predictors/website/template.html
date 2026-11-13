@@ -120,6 +120,7 @@ select {
 }
 .cell.h { background: var(--home); }
 .cell.a { background: var(--away); }
+.cell.miss { opacity: 0.3; }
 .cell.selected { outline: 2px solid var(--ink); outline-offset: 1px; }
 .grid-caption { font-size: 13px; color: var(--muted); }
 .team-info { overflow-x: auto; }
@@ -146,6 +147,9 @@ select {
 .picks-table .who span { color: var(--muted); font-size: 12px; margin-left: 6px; }
 .picks-table td.h { color: var(--home); font-weight: 600; }
 .picks-table td.a { color: var(--away); font-weight: 600; }
+.picks-table td.miss { opacity: 0.35; text-decoration: line-through; }
+.picks-table td.season { color: var(--ink); font-weight: 600; border-right: 1px solid var(--line); }
+.final { font-size: 14px; font-weight: 600; }
 </style>
 
 <div class="page">
@@ -168,7 +172,7 @@ select {
 
   <section class="all-picks" aria-labelledby="all-picks-h">
     <h2 id="all-picks-h">Every predictor's picks</h2>
-    <p class="muted">One row per predictor, one column per game above. Green is a home-team pick and orange is an away-team pick.</p>
+    <p class="muted">One row per predictor, one column per game above. Green is a home-team pick and orange is an away-team pick. Once a game is over, wrong picks are crossed out. "Season right" counts every saved pick since November 1.</p>
     <div class="picks-scroll">
       <table class="picks-table">
         <thead id="picks-head"></thead>
@@ -399,8 +403,15 @@ function renderGame(card) {
   vote.innerHTML = `
     <div class="vote-line"><span class="a">${away} ${awayVotes} <small>votes</small></span><span class="h">${home} ${homeVotes} <small>votes</small></span></div>
     <div class="bar" aria-hidden="true">${awayVotes ? `<span class="a" style="flex:${awayVotes}"></span>` : ""}${homeVotes ? `<span class="h" style="flex:${homeVotes}"></span>` : ""}</div>`;
+  const result = RESULTS[`${away} at ${home}`];
+  const winner = result && result[0] !== result[1] ? (result[1] > result[0] ? home : away) : null;
+  card.picks.winner = winner;
+  if (result) {
+    const right = picks.filter(p => p.pick === winner).length;
+    vote.insertAdjacentHTML("beforeend", `<div class="final">Final: ${away} ${result[0]}, ${home} ${result[1]}. ${winner ? `${right} of 100 predictors were right.` : "Tie game."}</div>`);
+  }
   grid.innerHTML = picks.map(p =>
-    `<button type="button" class="cell ${p.pick === home ? "h" : "a"}" data-i="${p.predictor - 1}" aria-label="Predictor ${p.predictor}, ${fmt(p.games)} games, picks ${p.pick}"></button>`
+    `<button type="button" class="cell ${p.pick === home ? "h" : "a"}${winner && p.pick !== winner ? " miss" : ""}" data-i="${p.predictor - 1}" aria-label="Predictor ${p.predictor}, ${fmt(p.games)} games, picks ${p.pick}"></button>`
   ).join("");
   renderPicksTable();
   grid.querySelectorAll(".cell").forEach(cell => {
@@ -408,8 +419,9 @@ function renderGame(card) {
       grid.querySelectorAll(".selected").forEach(c => c.classList.remove("selected"));
       cell.classList.add("selected");
       const p = picks[+cell.dataset.i];
+      const outcome = winner ? (p.pick === winner ? " It was right." : " It was wrong.") : "";
       detail.textContent = p.lockedOn
-        ? `Predictor ${p.predictor} picks ${p.pick}. Locked in on ${dateLabel(p.lockedOn)}.`
+        ? `Predictor ${p.predictor} picked ${p.pick}. Locked in on ${dateLabel(p.lockedOn)}.${outcome}`
         : p.games === 0
         ? `Predictor 1 learned from 0 games, so it flipped a coin: ${p.pick}.`
         : `Predictor ${p.predictor} learned from ${fmt(p.games)} games and picks ${p.pick} by ${p.margin.toFixed(1)} points.`;
@@ -448,12 +460,13 @@ document.getElementById("copy-picks").addEventListener("click", () => {
 function renderPicksTable() {
   const games = [...gamesEl.querySelectorAll(".game")].map(c => c.picks).filter(Boolean);
   document.getElementById("picks-head").innerHTML =
-    `<tr><th class="who">Predictor</th>${games.map(g =>
+    `<tr><th class="who">Predictor</th>${SEASON.length ? `<th>Season<br>right</th>` : ""}${games.map(g =>
       `<th>${g.away} @ ${g.home}${g.date ? `<br>${dateLabel(g.date)}` : ""}</th>`).join("")}</tr>`;
   document.getElementById("picks-body").innerHTML = COUNTS.map((n, i) =>
-    `<tr><th scope="row" class="who">#${i + 1}<span>${fmt(n)} games</span></th>${games.map(g => {
+    `<tr><th scope="row" class="who">#${i + 1}<span>${fmt(n)} games</span></th>${SEASON.length ? `<td class="season">${SEASON[i][0]} of ${SEASON[i][1]}</td>` : ""}${games.map(g => {
       const pick = g.picks[i].pick;
-      return `<td class="${pick === g.home ? "h" : "a"}">${pick}</td>`;
+      const miss = g.winner && pick !== g.winner ? " miss" : "";
+      return `<td class="${pick === g.home ? "h" : "a"}${miss}">${pick}</td>`;
     }).join("")}</tr>`
   ).join("");
 }

@@ -9,6 +9,7 @@ Each week, run "update" and then "pick" before the first game of the week
 (usually Thursday). After the games, run "update" and then "score".
 
 Picks are saved in picks/<date>.csv and are never changed after that.
+"pick" and "score" also rebuild the website with the latest picks and results.
 A game that was already picked in an earlier file is not picked again.
 """
 
@@ -159,9 +160,17 @@ def score():
     print(f"Full scoreboard: {os.path.relpath(SCOREBOARD_FILE)}")
 
 
+def build_website():
+    sys.path.insert(0, os.path.join(HERE, "website"))
+    import build
+    build.main()
+
+
 if __name__ == "__main__":
     commands = {"update": update, "pick": pick, "score": score}
     if len(sys.argv) != 2 or sys.argv[1] not in commands:
         print(__doc__.strip())
         sys.exit(1)
     commands[sys.argv[1]]()
+    if sys.argv[1] in ("pick", "score"):
+        build_website()
