@@ -44,8 +44,15 @@ class Predictor:
         """The part of the predicted margin that comes from the four numbers."""
         return sum(w * x for w, x in zip(self.weights, game["features"]))
 
-    def train(self, games):
-        """Learn from a list of finished games."""
+    def train(self, games, weights=None):
+        """Learn from a list of finished games.
+
+        `weights` optionally says how much each game counts (1 = fully);
+        without it every game counts the same.
+        """
+        if weights is None:
+            weights = [1.0] * len(games)
+        weight_of = {id(g): w for g, w in zip(games, weights)}
         self.games_seen = len(games)
         self.ratings = {}
         self.home_bonus = 0.0
@@ -59,30 +66,35 @@ class Predictor:
         home_games = [g for g in games if not g["neutral"]]
         # Pull each weight toward 0 as if there were PRIOR_GAMES typical games
         # where it didn't matter.
+        total_weight = sum(weights)
         weight_prior = [
-            PRIOR_GAMES * sum(g["features"][k] ** 2 for g in games) / len(games)
+            PRIOR_GAMES * sum(w * g["features"][k] ** 2 for g, w in zip(games, weights))
+            / total_weight
             if games else 0.0
             for k in range(len(FEATURES))
         ]
 
         for _ in range(TRAINING_PASSES):
             for team, team_games in games_by_team.items():
-                total = 0.0
+                total = count = 0.0
                 for g in team_games:
+                    w = weight_of[id(g)]
                     bonus = 0.0 if g["neutral"] else self.home_bonus
                     rest = g["margin"] - bonus - self._extras(g)
                     if g["home"] == team:
-                        total += rest + self.ratings[g["away"]]
+                        total += w * (rest + self.ratings[g["away"]])
                     else:
-                        total += -rest + self.ratings[g["home"]]
-                self.ratings[team] = total / (len(team_games) + PRIOR_GAMES)
+                        total += w * (-rest + self.ratings[g["home"]])
+                    count += w
+                self.ratings[team] = total / (count + PRIOR_GAMES)
 
             total = sum(
-                g["margin"] - self.ratings[g["home"]] + self.ratings[g["away"]]
-                - self._extras(g)
+                weight_of[id(g)] * (g["margin"] - self.ratings[g["home"]]
+                                    + self.ratings[g["away"]] - self._extras(g))
                 for g in home_games
             )
-            self.home_bonus = total / (len(home_games) + PRIOR_GAMES)
+            count = sum(weight_of[id(g)] for g in home_games)
+            self.home_bonus = total / (count + PRIOR_GAMES)
 
             for k in range(len(FEATURES)):
                 top = bottom = 0.0
@@ -94,8 +106,9 @@ class Predictor:
                     others = self._extras(g) - self.weights[k] * x
                     rest = (g["margin"] - self.ratings[g["home"]]
                             + self.ratings[g["away"]] - bonus - others)
-                    top += x * rest
-                    bottom += x * x
+                    w = weight_of[id(g)]
+                    top += w * x * rest
+                    bottom += w * x * x
                 if bottom:
                     self.weights[k] = top / (bottom + weight_prior[k])
 
