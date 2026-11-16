@@ -141,9 +141,10 @@ def pick():
         print(f"  {g['date']}  {matchup(g):12}  {g['home']} {home_votes}, {g['away']} {100 - home_votes}")
 
 
-# Picks saved on or after this date use version 2 of the predictors (only
-# 2020 and later, plus the roster stat). Earlier picks are version 1.
-VERSION_2_FROM = "2026-11-17"
+# Picks saved before this date (weeks 8-10) were redone with version 2 after
+# the games were played (see redo_version2.py), so they are scored separately
+# from the live picks.
+LIVE_FROM = "2026-11-17"
 
 
 def score():
@@ -151,7 +152,7 @@ def score():
     right = {"v1": {}, "v2": {}}
     scored = {"v1": 0, "v2": 0}
     for date, header, rows in saved_picks():
-        version = "v2" if date >= VERSION_2_FROM else "v1"
+        version = "v2" if date >= LIVE_FROM else "v1"
         winners = {}
         for m in header[2:]:
             away, home = m.split(" at ")
@@ -163,7 +164,8 @@ def score():
             print(f"{date}: no results yet")
             continue
         columns = {m: header.index(m) for m in winners}
-        print(f"{date} (version {version[1]}): {len(winners)} of {len(header) - 2} games finished")
+        label = "live" if version == "v2" else "redone after the games"
+        print(f"{date} ({label}): {len(winners)} of {len(header) - 2} games finished")
         for m, w in winners.items():
             count = sum(r[columns[m]] == w for r in rows)
             print(f"  {m:12}  winner {w:4} {count:3} of 100 right")
@@ -188,7 +190,7 @@ def score():
                              f"{100 * (r1 + r2) / total_games:.1f}",
                              r1, scored["v1"], r2, scored["v2"]])
     print()
-    for version, name in (("v1", "Version 1 (weeks 8-10)"), ("v2", "Version 2 (week 11 on)")):
+    for version, name in (("v1", "Weeks 8-10 (redone after the games)"), ("v2", "Week 11 on (live)")):
         if not scored[version]:
             continue
         best = max(right[version].values())

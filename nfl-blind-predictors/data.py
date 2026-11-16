@@ -162,8 +162,11 @@ class TeamTracker:
         self.lineups.update(lineups)
 
 
-def load_games():
+def load_games(as_of=None):
     """Return (finished games, upcoming games, tracker as of today), oldest first.
+
+    With `as_of` (a date like "2026-11-03"), games on or after that date are
+    treated as not played yet, to see the data as it was on that day.
 
     Each game has home, away, margin (None if not played yet), neutral,
     and features: home team's numbers minus away team's, in FEATURES order.
@@ -176,7 +179,7 @@ def load_games():
     for row in rows:
         season = int(row["season"])
         home, away = team_name(row["home_team"]), team_name(row["away_team"])
-        played = row["home_score"] != ""
+        played = row["home_score"] != "" and (as_of is None or row["gameday"] < as_of)
         tracker.advance_to(season, row["gameday"])
         home_f, away_f = tracker.features(home), tracker.features(away)
         game = {

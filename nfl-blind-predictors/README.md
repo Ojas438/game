@@ -29,9 +29,13 @@ It also gives every team a strength rating and adds a home-field bonus. From
 the games it was shown, it learns the ratings, the bonus, and how much each of
 the five things matters, then picks winners.
 
-This is version 2, used from week 11 of 2026 on. Version 1, used for weeks 8
-to 10, learned from every game since 1999 and had no roster stat. Its
-results are below too.
+This is version 2. Version 1 learned from every game since 1999 and had no
+roster stat. Weeks 8 to 10 of 2026 were first picked live with version 1,
+then redone with version 2 after those games were played (`python
+redo_version2.py`), using only data from before each original pick date.
+Those redone picks are a re-test, not live predictions, so they're scored
+separately. Live version 2 picks start with week 11. The original version 1
+picks are kept in `picks/version1/`.
 
 ## The test
 
