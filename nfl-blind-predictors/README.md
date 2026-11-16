@@ -8,22 +8,30 @@ There are 100 predictors, and they all run the exact same code. The only
 difference is how many past NFL games each one is allowed to learn from:
 
 - Predictor 1 gets **0 games**, so it can only guess.
-- Predictor 100 gets **every game available** (about 5,800).
-- The ones in between get amounts that grow step by step (1, 2, 3 ... 100,
-  119, 142 ... 1,000 ... 5,000), with more predictors at the small end,
-  where each extra game should matter most.
+- Predictor 100 gets **every game from the 6 seasons before** the season it
+  predicts (for 2026, every game since the 2020 season), plus that season's
+  earlier games.
+- The ones in between get amounts that grow step by step, with more
+  predictors at the small end, where each extra game should matter most.
 
-Before every game, each predictor looks at four things about both teams,
+Before every game, each predictor looks at five things about both teams,
 using only what was known before kickoff:
 
 - **Record:** this season's win-loss record so far.
 - **Trend:** average point margin over the team's last 3 games.
 - **Draft:** how high the team picked in this year's draft.
 - **Trades:** players gained minus players given away in trades this year.
+- **Roster:** how good the players who played in the team's last game are.
+  Each player is rated by how his teams did in his last 17 games, on any
+  team, so a player who changes teams brings his rating with him.
 
 It also gives every team a strength rating and adds a home-field bonus. From
 the games it was shown, it learns the ratings, the bonus, and how much each of
-the four things matters, then picks winners.
+the five things matters, then picks winners.
+
+This is version 2, used from week 11 of 2026 on. Version 1, used for weeks 8
+to 10, learned from every game since 1999 and had no roster stat. Its
+results are below too.
 
 ## The test
 
@@ -89,36 +97,41 @@ python website/build.py
 
 ## Results
 
+Version 2, tested on 1,420 games from 2021 to 2025:
+
 | Predictor | Games learned from | Accuracy |
 | --- | --- | --- |
 | 1 | 0 | 50.4% |
-| 11 | 10 | 52.7% |
+| 11 | 10 | 53.1% |
+| 30 | 29 | 57.8% |
+| 70 | 168 | 59.3% |
+| 80 | 356 | 59.9% |
+| 90 | 755 | 60.8% |
+| 93 | 947 (best) | 62.5% |
+| 100 | 1,604 (all) | 62.3% |
+| Betting favorites | (for comparison) | 66.5% |
+
+1. **Accuracy kept rising up to about 900 games** (about 3.5 seasons), then
+   leveled off. Using all 1,604 games was no better than 947.
+2. **Recent data didn't make it worse.** Version 1, which learned from every
+   game since 1999, peaked at 61.8% with 835 games and was 60.9% with all
+   5,852. Version 2 is slightly better at 62.5%, but the difference is
+   inside the margin of error.
+
+Version 1 results (every game since 1999, no roster stat):
+
+| Predictor | Games learned from | Accuracy |
+| --- | --- | --- |
+| 1 | 0 | 50.4% |
 | 50 | 70 | 57.3% |
-| 60 | 170 | 58.8% |
 | 72 | 491 | 61.1% |
 | 78 | 835 (best) | 61.8% |
 | 85 | 1,551 | 59.8% |
 | 100 | 5,852 | 60.9% |
-| Betting favorites | (for comparison) | 66.5% |
 
-What happened:
-
-1. **The first few hundred games give almost all the gain.** Going from 0 to
-   491 games (about two seasons) takes accuracy from a coin flip to 61%,
-   within 1 point of the best.
-2. **After about 800 games, more data stopped helping.** The predictor with
-   all ~5,800 games was no better than the one with 835, and took about 8
-   times longer to train.
-
-So for this problem, about 8 to 15% of the data gave as good a result as all
-of it. Training on the rest cost extra computing (and water) for no gain.
-
-An earlier version only used final scores, with no record, trend, draft or
-trade information. That one peaked at 61.2% with 344 games and then got
-worse with more data (57.0% with all of it), because games from 10 or 20
-years ago describe teams that have completely changed. Record and trend
-describe how a team is doing *this season*, so old games stay useful for
-learning how much those matter.
+An even earlier version used only final scores. It peaked at 61.2% with 344
+games and then got worse with more data (57.0% with all of it), because games
+from 10 or 20 years ago describe teams that have completely changed.
 
 ## Which kind of data matters?
 
@@ -126,30 +139,27 @@ learning how much those matter.
 python ablation.py
 ```
 
-Runs the same test six times: with all four stats, with scores only, and
-with each stat left out. Average accuracy over the predictors in each range
-(1,420 test games, 2021 to 2025):
+Runs the version 2 test seven times: with all stats, with scores only, and
+with each stat left out. Average accuracy over the predictors in each range:
 
-| Version | 1 to 100 games | 100 to 1,000 games | 1,000+ games |
+| Version | 1 to 100 games | 100 to 500 games | 500+ games |
 | --- | --- | --- | --- |
-| All four stats | 54.9% | 59.3% | 60.7% |
-| Scores only | 55.4% | 59.3% | 57.3% |
-| No record | 53.7% | 58.4% | 60.3% |
-| No trend | 56.2% | 59.5% | 60.0% |
-| No draft | 55.4% | 59.7% | 60.5% |
-| No trades | 54.9% | 59.1% | 60.6% |
+| All stats | 55.5% | 58.8% | 61.3% |
+| Scores only | 55.6% | 59.5% | 58.6% |
+| No record | 55.4% | 58.7% | 61.3% |
+| No trend | 56.9% | 59.1% | 61.3% |
+| No draft | 55.9% | 59.7% | 61.3% |
+| No trades | 55.5% | 58.8% | 61.4% |
+| No roster | 55.2% | 58.6% | 60.5% |
 
-- With lots of data, the four stats together add about 3.4 points over
-  scores only (60.7% vs 57.3%), and stop old games from making it worse.
-- Leaving out any one stat costs less than 1 point. Record and trend both
-  describe how a team is playing this season, so either one can mostly
-  cover for the other.
-- Draft and trades made almost no difference.
-- With very little data, fewer stats did slightly better, because there
-  are fewer weights to learn from a few games.
-- Most of these differences are under 1 point, which is within the margin of
-  error. Only the gap between all four stats and scores only with 1,000+
-  games is clearly bigger than luck.
+- **Roster matters most.** Leaving it out lowers accuracy with all 1,604
+  games from 62.3% to 60.0%.
+- **Record and trend barely matter once roster is there.** The roster stat
+  already captures how well a team is playing.
+- **Draft and trades made almost no difference.**
+- With very little data, the extra stats don't help, because there are too
+  many weights to learn from a few games.
+- Most of these differences are under 1 point, within the margin of error.
 
 ## Limits
 
@@ -170,6 +180,8 @@ All from [nflverse](https://github.com/nflverse/nfldata):
 - `data/draft_picks.csv`: every draft pick since 1999, through the 2026 draft.
 - `data/trades.csv`: every trade since 2002. The file only goes up to
   April 2026, so trades made during this season aren't in it yet.
+- `data/snap_counts.csv.gz`: every player's plays on offense and defense in
+  every game since 2013, used for the roster stat.
 
 Teams that moved (Oakland, San Diego, St. Louis) count as the same team after
 the move.

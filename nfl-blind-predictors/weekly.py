@@ -1,7 +1,7 @@
 """The weekly routine: update the data, lock in picks, and score them.
 
 Usage:
-    python weekly.py update   # download the latest scores and trades
+    python weekly.py update   # download the latest scores, trades and player data
     python weekly.py pick     # save all 100 predictors' picks for the next week
     python weekly.py score    # score every saved pick against the real results
 
@@ -16,12 +16,13 @@ A game that was already picked in an earlier file is not picked again.
 import csv
 import datetime
 import glob
+import gzip
 import io
 import os
 import sys
 import urllib.request
 
-from data import FEATURES, GAMES_FILE, TRADES_FILE, load_games
+from data import FEATURES, GAMES_FILE, SNAPS_FILE, TRADES_FILE, load_games, recent
 from predictors import build_predictors, game_counts
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -54,7 +55,30 @@ def update():
         rename={"player": "pfr_name"},
         out_file=TRADES_FILE,
     )
-    print(f"Updated: {games} games, {trades} trade records.")
+    players = update_snaps()
+    print(f"Updated: {games} games, {trades} trade records, {players} player-game records.")
+
+
+def update_snaps():
+    """Replace this season's player snap counts with the latest ones."""
+    with open(GAMES_FILE, newline="") as f:
+        season = max(int(r["season"]) for r in csv.DictReader(f))
+    url = ("https://github.com/nflverse/nflverse-data/releases/download/"
+           f"snap_counts/snap_counts_{season}.csv")
+    with urllib.request.urlopen(url) as response:
+        new = list(csv.DictReader(io.StringIO(response.read().decode("utf-8"))))
+    with gzip.open(SNAPS_FILE, "rt", newline="") as f:
+        kept = [r for r in csv.DictReader(f) if not r["game_id"].startswith(f"{season}_")]
+    for r in new:
+        snaps = int(float(r["offense_snaps"] or 0)) + int(float(r["defense_snaps"] or 0))
+        if snaps > 0:
+            kept.append({"game_id": r["game_id"], "team": r["team"],
+                         "player_id": r["pfr_player_id"], "snaps": snaps})
+    with gzip.open(SNAPS_FILE, "wt", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["game_id", "team", "player_id", "snaps"])
+        writer.writeheader()
+        writer.writerows(kept)
+    return len(kept)
 
 
 def matchup(game):
@@ -87,6 +111,7 @@ def pick():
         print("Every game this week has already been picked.")
         return
 
+    games = recent(games, upcoming[0]["season"])
     counts = game_counts(len(games))
     predictors = build_predictors(len(counts))
     for predictor, n in zip(predictors, counts):
@@ -116,11 +141,17 @@ def pick():
         print(f"  {g['date']}  {matchup(g):12}  {g['home']} {home_votes}, {g['away']} {100 - home_votes}")
 
 
+# Picks saved on or after this date use version 2 of the predictors (only
+# 2020 and later, plus the roster stat). Earlier picks are version 1.
+VERSION_2_FROM = "2026-11-17"
+
+
 def score():
-    games, _, _ = load_games()
-    total_right = {}
-    total_games = 0
+    games, upcoming, _ = load_games()
+    right = {"v1": {}, "v2": {}}
+    scored = {"v1": 0, "v2": 0}
     for date, header, rows in saved_picks():
+        version = "v2" if date >= VERSION_2_FROM else "v1"
         winners = {}
         for m in header[2:]:
             away, home = m.split(" at ")
@@ -132,31 +163,40 @@ def score():
             print(f"{date}: no results yet")
             continue
         columns = {m: header.index(m) for m in winners}
-        print(f"{date}: {len(winners)} of {len(header) - 2} games finished")
+        print(f"{date} (version {version[1]}): {len(winners)} of {len(header) - 2} games finished")
         for m, w in winners.items():
-            right = sum(r[columns[m]] == w for r in rows)
-            print(f"  {m:12}  winner {w:4} {right:3} of 100 right")
-        total_games += len(winners)
+            count = sum(r[columns[m]] == w for r in rows)
+            print(f"  {m:12}  winner {w:4} {count:3} of 100 right")
+        scored[version] += len(winners)
         for r in rows:
-            right = sum(r[columns[m]] == w for m, w in winners.items())
-            total_right[int(r[0])] = total_right.get(int(r[0]), 0) + right
+            got = sum(r[columns[m]] == w for m, w in winners.items())
+            right[version][int(r[0])] = right[version].get(int(r[0]), 0) + got
 
+    total_games = scored["v1"] + scored["v2"]
     if not total_games:
         return
-    counts = game_counts(len(games))
+    season = upcoming[0]["season"] if upcoming else games[-1]["season"]
+    counts = game_counts(len(recent(games, season)))
     os.makedirs(os.path.dirname(SCOREBOARD_FILE), exist_ok=True)
     with open(SCOREBOARD_FILE, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["predictor", "games_learned_from_now", "right", "games_scored", "percent"])
-        for p in sorted(total_right):
-            writer.writerow([p, counts[p - 1], total_right[p], total_games,
-                             f"{100 * total_right[p] / total_games:.1f}"])
-    best = max(total_right.values())
-    leaders = [p for p, r in total_right.items() if r == best]
-    average = sum(total_right.values()) / len(total_right)
-    print(f"\nSeason so far: {total_games} games scored. Average predictor: "
-          f"{average:.1f} right. Best: {best} right (predictor "
-          f"{', '.join(map(str, leaders))}).")
+        writer.writerow(["predictor", "games_learned_from_now", "right", "games_scored", "percent",
+                         "right_v1", "games_scored_v1", "right_v2", "games_scored_v2"])
+        for p in range(1, len(counts) + 1):
+            r1, r2 = right["v1"].get(p, 0), right["v2"].get(p, 0)
+            writer.writerow([p, counts[p - 1], r1 + r2, total_games,
+                             f"{100 * (r1 + r2) / total_games:.1f}",
+                             r1, scored["v1"], r2, scored["v2"]])
+    print()
+    for version, name in (("v1", "Version 1 (weeks 8-10)"), ("v2", "Version 2 (week 11 on)")):
+        if not scored[version]:
+            continue
+        best = max(right[version].values())
+        leaders = [p for p, r in right[version].items() if r == best]
+        average = sum(right[version].values()) / len(right[version])
+        print(f"{name}: {scored[version]} games scored. Average predictor: "
+              f"{average:.1f} right. Best: {best} right (predictor "
+              f"{', '.join(map(str, leaders))}).")
     print(f"Full scoreboard: {os.path.relpath(SCOREBOARD_FILE)}")
 
 

@@ -14,7 +14,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 
-from data import FEATURES, GAMES_FILE, load_games, team_name  # noqa: E402
+from data import FEATURES, GAMES_FILE, load_games, recent, team_name  # noqa: E402
 
 
 def main():
@@ -25,10 +25,13 @@ def main():
     def numbers(features):
         return ",".join(format(round(x, 4), "g") for x in features)
 
+    # The live predictors learn only from recent seasons (see data.recent).
+    season = upcoming[0]["season"] if upcoming else games[-1]["season"]
+    pool = recent(games, season)
     rows = ";".join(
         f"{index[g['home']]},{index[g['away']]},{g['margin']},{int(g['neutral'])},"
         + numbers(g["features"])
-        for g in games
+        for g in pool
     )
     # Every game in the current week: the week of the next game not yet
     # played, including that week's games that are already finished.
@@ -50,10 +53,12 @@ def main():
         }
     # Each predictor's season record so far, from weekly.py score.
     scoreboard_file = os.path.join(os.path.dirname(HERE), "results", "season_scoreboard.csv")
-    season = []
+    season_record = []
     if os.path.exists(scoreboard_file):
         with open(scoreboard_file, newline="") as f:
-            season = [[int(r["right"]), int(r["games_scored"])] for r in csv.DictReader(f)]
+            season_record = [[int(r["right_v1"]), int(r["games_scored_v1"]),
+                       int(r["right_v2"]), int(r["games_scored_v2"])]
+                      for r in csv.DictReader(f)]
     # Picks already locked in by weekly.py, so the page shows exactly those.
     locked = {}
     for path in sorted(glob.glob(os.path.join(os.path.dirname(HERE), "picks", "????-??-??.csv"))):
@@ -75,14 +80,14 @@ def main():
         f"const CURRENT = {json.dumps(current)};\n"
         f"const LOCKED = {json.dumps(locked)};\n"
         f"const RESULTS = {json.dumps(results)};\n"
-        f"const SEASON = {json.dumps(season)};\n"
+        f"const SEASON = {json.dumps(season_record)};\n"
         f"const GAME_ROWS = \"{rows}\";"
     )
     with open(os.path.join(HERE, "template.html")) as f:
         page = f.read().replace("/*__DATA__*/", data)
     with open(os.path.join(HERE, "index.html"), "w") as f:
         f.write(page)
-    print(f"Wrote website/index.html ({len(games)} games, {len(shown)} games shown)")
+    print(f"Wrote website/index.html ({len(pool)} games, {len(shown)} games shown)")
 
 
 if __name__ == "__main__":

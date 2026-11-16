@@ -157,7 +157,7 @@ select {
     <div class="yardline" aria-hidden="true"></div>
     <h1>Same Algorithm, More Data</h1>
     <p class="lede">100 copies of one NFL prediction algorithm. Predictor 1 learns from 0 games, predictor 100 learns from <span id="all-games"></span> games, and the rest learn from amounts in between. Here is what each one picks.</p>
-    <p class="muted">Every predictor looks at the same four things about both teams: this season's record, the average point margin over its last 3 games, how high it picked in this year's draft (a higher number means more high picks), and players gained minus players lost in trades this year. From the games it learns from, it works out how much each one matters. The trade list only goes up to April 2026, so trades made since then are not counted.</p>
+    <p class="muted">Every predictor looks at the same five things about both teams: this season's record, the average point margin over its last 3 games, how high it picked in this year's draft, players gained minus players lost in trades this year, and its roster: how good the players who played in its last game are, based on how their teams did in each player's last 17 games. From the games it learns from, it works out how much each one matters. The predictors learn only from games since the 2020 season. The trade list only goes up to April 2026, so trades made since then are not counted.</p>
     <p class="muted">Each predictor learns from the most recent finished games. Change a matchup, remove it, or add your own. Tap a square to see that predictor's pick.</p>
   </header>
 
@@ -172,7 +172,7 @@ select {
 
   <section class="all-picks" aria-labelledby="all-picks-h">
     <h2 id="all-picks-h">Every predictor's picks</h2>
-    <p class="muted">One row per predictor, one column per game above. Green is a home-team pick and orange is an away-team pick. Once a game is over, wrong picks are crossed out. "Season right" counts every saved pick since November 1.</p>
+    <p class="muted">One row per predictor, one column per game above. Green is a home-team pick and orange is an away-team pick. Once a game is over, wrong picks are crossed out. The predictors changed after week 10, so their records are kept separately: weeks 8–10 used every game since 1999 and four stats, and from week 11 on they learn only from 2020 and later and also use the roster stat.</p>
     <div class="picks-scroll">
       <table class="picks-table">
         <thead id="picks-head"></thead>
@@ -341,7 +341,7 @@ const signed = (x, digits) => (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).t
 
 function teamRow(team, side) {
   const t = CURRENT[team];
-  return `<tr><th scope="row">${team} <span class="muted">${side}</span></th><td>${t.wins_losses}</td><td>${signed(t.trend, 1)}</td><td>${t.draft.toFixed(2)}</td><td>${signed(t.trades, 0)}</td></tr>`;
+  return `<tr><th scope="row">${team} <span class="muted">${side}</span></th><td>${t.wins_losses}</td><td>${signed(t.trend, 1)}</td><td>${t.draft.toFixed(2)}</td><td>${signed(t.trades, 0)}</td><td>${signed(t.roster, 1)}</td></tr>`;
 }
 
 function teamOptions(selected) {
@@ -362,7 +362,7 @@ function addGame(home, away, date, neutral = false) {
       <button type="button" class="quiet remove">Remove</button>
     </div>
     <div class="team-info"><table>
-      <thead><tr><th></th><th>Record</th><th>Last 3</th><th>Draft</th><th>Trades</th></tr></thead>
+      <thead><tr><th></th><th>Record</th><th>Last 3</th><th>Draft</th><th>Trades</th><th>Roster</th></tr></thead>
       <tbody></tbody>
     </table></div>
     <div class="vote"></div>
@@ -460,10 +460,10 @@ document.getElementById("copy-picks").addEventListener("click", () => {
 function renderPicksTable() {
   const games = [...gamesEl.querySelectorAll(".game")].map(c => c.picks).filter(Boolean);
   document.getElementById("picks-head").innerHTML =
-    `<tr><th class="who">Predictor</th>${SEASON.length ? `<th>Season<br>right</th>` : ""}${games.map(g =>
+    `<tr><th class="who">Predictor</th>${SEASON.length ? `<th>Weeks 8–10<br>right</th><th>Week 11 on<br>right</th>` : ""}${games.map(g =>
       `<th>${g.away} @ ${g.home}${g.date ? `<br>${dateLabel(g.date)}` : ""}</th>`).join("")}</tr>`;
   document.getElementById("picks-body").innerHTML = COUNTS.map((n, i) =>
-    `<tr><th scope="row" class="who">#${i + 1}<span>${fmt(n)} games</span></th>${SEASON.length ? `<td class="season">${SEASON[i][0]} of ${SEASON[i][1]}</td>` : ""}${games.map(g => {
+    `<tr><th scope="row" class="who">#${i + 1}<span>${fmt(n)} games</span></th>${SEASON.length ? `<td class="season">${SEASON[i][0]} of ${SEASON[i][1]}</td><td class="season">${SEASON[i][3] ? `${SEASON[i][2]} of ${SEASON[i][3]}` : "–"}</td>` : ""}${games.map(g => {
       const pick = g.picks[i].pick;
       const miss = g.winner && pick !== g.winner ? " miss" : "";
       return `<td class="${pick === g.home ? "h" : "a"}${miss}">${pick}</td>`;

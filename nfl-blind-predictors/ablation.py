@@ -14,13 +14,13 @@ Writes results/ablation.csv.
 import csv
 import os
 
-from data import FEATURES, load_games
+from data import FEATURES, load_games, recent
 from experiment import TEST_SEASONS
 from predictors import build_predictors, game_counts
 
 RESULTS_FILE = os.path.join(os.path.dirname(__file__), "results", "ablation.csv")
 
-VERSIONS = {"All four stats": FEATURES, "Scores only": []}
+VERSIONS = {"All stats": FEATURES, "Scores only": []}
 VERSIONS.update({f"No {name}": [f for f in FEATURES if f != name] for name in FEATURES})
 
 
@@ -32,7 +32,7 @@ def keep_only(games, kept):
 
 def run(games, kept):
     seasons = [
-        ([g for g in games if g["season"] < s],
+        ([g for g in recent(games, s) if g["season"] < s],
          [g for g in games if g["season"] == s and g["margin"] != 0])
         for s in TEST_SEASONS
     ]

@@ -20,7 +20,7 @@ import math
 import os
 import time
 
-from data import load_games
+from data import load_games, recent
 from predictors import build_predictors, game_counts
 
 RESULTS_FILE = os.path.join(os.path.dirname(__file__), "results", "results.csv")
@@ -34,7 +34,7 @@ def main():
     games, _, _ = load_games()
     seasons = {
         season: (
-            [g for g in games if g["season"] < season],
+            [g for g in recent(games, season) if g["season"] < season],
             [g for g in games if g["season"] == season and g["margin"] != 0],
         )
         for season in TEST_SEASONS
