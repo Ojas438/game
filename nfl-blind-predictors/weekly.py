@@ -196,9 +196,10 @@ def score():
         best = max(right[version].values())
         leaders = [p for p, r in right[version].items() if r == best]
         average = sum(right[version].values()) / len(right[version])
+        who = (f"predictor {', '.join(map(str, leaders))}" if len(leaders) <= 8
+               else f"{len(leaders)} predictors tied")
         print(f"{name}: {scored[version]} games scored. Average predictor: "
-              f"{average:.1f} right. Best: {best} right (predictor "
-              f"{', '.join(map(str, leaders))}).")
+              f"{average:.1f} right. Best: {best} right ({who}).")
     print(f"Full scoreboard: {os.path.relpath(SCOREBOARD_FILE)}")
 
 
