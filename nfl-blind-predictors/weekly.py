@@ -3,6 +3,7 @@
 Usage:
     python weekly.py update   # download the latest scores, trades and player data
     python weekly.py pick     # save all 100 predictors' picks for the next week
+    python weekly.py pick --skip "PHI at DAL"   # leave out a game already underway
     python weekly.py score    # score every saved pick against the real results
 
 Each week, run "update" and then "pick" before the first game of the week
@@ -95,7 +96,7 @@ def saved_picks():
     return files
 
 
-def pick():
+def pick(skip=()):
     games, upcoming, tracker = load_games()
     today = datetime.date.today().isoformat()
     already = {(date, m) for date, header, _ in saved_picks() for m in header[2:]}
@@ -106,7 +107,8 @@ def pick():
         return
     week = (upcoming[0]["season"], upcoming[0]["week"])
     to_pick = [g for g in upcoming
-               if (g["season"], g["week"]) == week and matchup(g) not in already_matchups]
+               if (g["season"], g["week"]) == week and matchup(g) not in already_matchups
+               and matchup(g) not in skip]
     if not to_pick:
         print("Every game this week has already been picked.")
         return
@@ -211,9 +213,12 @@ def build_website():
 
 if __name__ == "__main__":
     commands = {"update": update, "pick": pick, "score": score}
-    if len(sys.argv) != 2 or sys.argv[1] not in commands:
+    if len(sys.argv) < 2 or sys.argv[1] not in commands:
         print(__doc__.strip())
         sys.exit(1)
-    commands[sys.argv[1]]()
+    if sys.argv[1] == "pick" and sys.argv[2:3] == ["--skip"]:
+        pick(skip=set(sys.argv[3:]))
+    else:
+        commands[sys.argv[1]]()
     if sys.argv[1] in ("pick", "score"):
         build_website()

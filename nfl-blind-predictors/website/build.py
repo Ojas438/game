@@ -42,7 +42,6 @@ def main():
         (g for g in games + upcoming if (g["season"], g["week"]) == week),
         key=lambda g: g["date"],
     )
-    shown = [[g["date"], g["home"], g["away"], int(g["neutral"])] for g in this_week]
     # Final scores for this week's finished games.
     with open(GAMES_FILE, newline="") as f:
         results = {
@@ -69,6 +68,11 @@ def main():
                 "date": os.path.basename(path)[:10],
                 "picks": [r[col] for r in pick_rows[1:]],
             }
+    # Show only games with saved picks; games skipped because they had already
+    # started are left out. Before any picks are saved, show the whole week.
+    picked = [g for g in this_week if f"{g['away']} at {g['home']}" in locked]
+    shown = [[g["date"], g["home"], g["away"], int(g["neutral"])]
+             for g in (picked or this_week)]
     current = {
         team: {**tracker.features(team), "wins_losses": tracker.record_text(team)}
         for team in sorted(tracker.results)
